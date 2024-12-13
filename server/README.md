@@ -1,4 +1,5 @@
-# server
+# Server
+Back-end development with Node.js🛠️
 
 ## Running the project
 
@@ -64,4 +65,4 @@ npm run migration
 pnpm run migration
 ```
 
-6. O servidor está rodando.
+6. O servidor está rodando :)
