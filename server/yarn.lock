@@ -1999,6 +1999,11 @@
   resolved "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.3.107.tgz"
   integrity sha512-uBVNhIg0ip8rH9OnOsCARUFZ3Mq3tbPHxtmWk9uAa5u8jQwGWeBx5+nTHpDOVd3YxKb6+5xDEI/edeeLpha/9g==
 
+"@swc/core-linux-x64-musl@1.3.107":
+  version "1.3.107"
+  resolved "https://registry.npmjs.org/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.3.107.tgz"
+  integrity sha512-mvACkUvzSIB12q1H5JtabWATbk3AG+pQgXEN95AmEX2ZA5gbP9+B+mijsg7Sd/3tboHr7ZHLz/q3SHTvdFJrEw==
+
 "@swc/core@*", "@swc/core@^1.2.66", "@swc/core@^1.3.107", "@swc/core@>=1.2.50":
   version "1.3.107"
   resolved "https://registry.npmjs.org/@swc/core/-/core-1.3.107.tgz"
