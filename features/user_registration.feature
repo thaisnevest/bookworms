@@ -54,4 +54,3 @@ Feature: Cadastro de usuários
         Then eu vejo a mensagem de erro “Campo obrigatório não preenchido”.
         And permaneço na página de “Cadastro de Usuários”.
         And teste
-# oi jsdlkjfslkdaalksdjflsdkjf skladfja
