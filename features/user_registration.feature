@@ -53,3 +53,4 @@ Feature: Cadastro de usuários
         And eu clico em “Cadastrar”
         Then eu vejo a mensagem de erro “Campo obrigatório não preenchido”.
         And permaneço na página de “Cadastro de Usuários”.
+        And teste
