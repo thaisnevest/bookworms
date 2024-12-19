@@ -3,7 +3,6 @@ Feature: Atualizar cadastro de usuário
     I want to atualizar as informações do meu cadastro
     So that meu perfil reflita minhas preferências e informações atualizadas.
 
-
     Scenario: Atualizar o cadastro com sucesso
         Given que eu estou logado no sistema como um usuário cadastrado
         And estou na página de “Atualizar Cadastro”.
