@@ -55,3 +55,4 @@ Feature: Cadastro de usuários
         And permaneço na página de “Cadastro de Usuários”.
         And teste
 # teste para rebase questao final
+# teste para usar rebase
