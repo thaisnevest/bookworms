@@ -23,3 +23,24 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And Eu faço uma publicação com legenda "Leitura de hoje"
         Then Eu ainda estou na página "Grupo"
         And Eu vejo que minha pontuação atual é "11"
+
+    Scenario: Redução de pontos com páginas lidas
+        Given Given Eu estou logado com o email "ana@gmail.com" e senha "1234#"
+        And Eu participo do grupo de código "XYZKIO" com pontuação por "Página Lidas"
+        And Eu estou na página "Grupo"
+        And Eu vejo que minha pontuação atual no grupo é "45"
+        When Eu expando minha publicação com legenda "Leitura do dia" e número de páginas "35"
+        And Eu seleciono a opção "Exluir publicação"
+        Then Eu ainda estou na página "Grupo"
+        And Eu vejo que minha pontuação atual é "10"
+
+    Scenario: Redução de pontos com check-in
+        Given Eu estou logado com o email "ana@gmail.com" e senha "1234#" no dia "12/12/24"
+        And Eu participo do grupo de código "XYZKIO" com pontuação por "Check-in"
+        And Eu estou na página "Grupo"
+        And Eu vejo que minha pontuação atual no grupo é "10"
+        And Eu vejo que tenho 1 única publicação no dia "12/12/24" com legenda "Leitura do dia"
+        When Eu expando minha publicação com legenda "Leitura do dia"
+        And Eu seleciono a opção "Exluir publicação"
+        Then Eu ainda estou na página "Grupo"
+        And Eu vejo que minha pontuação atual é "9"
