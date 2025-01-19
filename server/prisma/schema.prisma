@@ -19,8 +19,8 @@ model User {
   image    String?
   posts    Post[]
   coments  Comment[]
-  group    Groups    @relation(fields: [groupId], references: [id])
-  groupId  String
+  group    Groups?   @relation(fields: [groupId], references: [id])
+  groupId  String?
 }
 
 model Post {
