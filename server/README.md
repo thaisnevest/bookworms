@@ -24,9 +24,8 @@ PROJECT_NAME=bookworms
 SERVER_PORT=3001
 NODE_ENV=development
 
-# ----> UNICA PARTE CRIADA PARA BOOKWORMS
-PASSWORD=Livrosminhocas
-DATABASE_URL=postgresql://postgres.erbtihwtnntpgrzueyfo:${PASSWORD}@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
+# ----> UNICA PARTE CRIADA PARA BOOKWORMS// A SENHA É: Livrosminhocas
+DATABASE_URL=postgresql://postgres.erbtihwtnntpgrzueyfo:Livrosminhocas@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
 
 # ###### JWT SETTINGS FOR AUTHENTICATION #######
 JWT_ACCESS_SECRET=0551c0ed-6389-46b1-839e-2e28fc191c89 # token for 30sec

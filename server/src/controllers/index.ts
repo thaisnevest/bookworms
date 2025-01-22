@@ -1,1 +1,2 @@
-export * from './groups.controllers'
+import GroupControllers from './groups.controllers'
+export {GroupControllers};
