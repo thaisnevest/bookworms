@@ -1,3 +1,3 @@
-import GroupRepository from './GroupRepository';
+import GroupRepository from './groupRepository';
 
 export { GroupRepository };
