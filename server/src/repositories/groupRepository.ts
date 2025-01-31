@@ -20,6 +20,7 @@ class GroupRepository {
     const newGroup = await prisma.groups.create({
       data: {
         ...data,
+        active: true,
         code: uniqueCode,
       },
     });

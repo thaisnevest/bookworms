@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import { GroupRepository } from '../repositories/index';
+import { Group } from '../DTOs/index';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
     try {
+
       const { groupName, groupImage, groupDuration, groupType } = req.body;
       if (!groupName || !groupImage || !groupDuration) {
         res.status(400).json('Campo obrigatório não preenchido');
         return;
-      } // essa parte vai sair, isso é parte do zod
+      } // essa parte vai sair quando resolvermos a imagem, isso é parte do zod
 
       const newGroup = await GroupRepository.create({
         name: groupName,
