@@ -1,4 +1,5 @@
 # Server
+
 Back-end development with Node.js🛠️
 
 ## Running the project
@@ -23,22 +24,10 @@ PROJECT_NAME=bookworms
 SERVER_PORT=3001
 NODE_ENV=development
 
-# ###### DATABASE SETTINGS #######
-DATABASE_TYPE=postgres
-DATABASE_HOST=${PROJECT_NAME}-db
+# ----> UNICA PARTE CRIADA PARA BOOKWORMS// A SENHA É: Livrosminhocas
+DATABASE_URL=postgresql://postgres.erbtihwtnntpgrzueyfo:Livrosminhocas@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
 DATABASE_PORT=5432
-DATABASE_USER=postgres
-DATABASE_PASSWORD=docker
-DATABASE_DB=${PROJECT_NAME}
-
-# ###### TEST DATABASE SETTINGS #######
-DATABASE_TEST_HOST=localhost
-DATABASE_TEST_PORT=5433
-DATABASE_TEST_USER=postgres
-DATABASE_TEST_PASSWORD=docker
-DATABASE_TEST_DB=bookworms-test
-
-DATABASE_URL=${DATABASE_TYPE}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DB}
+DATABASE_PASSWORD=Livrosminhocas
 
 # ###### JWT SETTINGS FOR AUTHENTICATION #######
 JWT_ACCESS_SECRET=0551c0ed-6389-46b1-839e-2e28fc191c89 # token for 30sec
