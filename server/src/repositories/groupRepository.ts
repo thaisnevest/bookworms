@@ -61,6 +61,11 @@ class GroupRepository {
     return group;
   }
 
+  async getAll(): Promise<Groups[]> {
+    const groups = await prisma.groups.findMany();
+    return groups;
+  }
+
   async enter(groupCode: string, userId: string): Promise<Groups> {
     const updatedGroup = await prisma.groups.update({
       where: { code: groupCode },
@@ -103,6 +108,17 @@ class GroupRepository {
     });
 
     return deletedGroup;
+  }
+
+  async ranking(groupId: string): Promise<User[]> {
+    const ranking = await prisma.user.findMany({
+      where: { groupId },
+      orderBy: {
+        score: 'desc',
+      },
+    });
+
+    return ranking;
   }
 }
 

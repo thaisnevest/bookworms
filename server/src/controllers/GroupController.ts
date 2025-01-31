@@ -1,11 +1,10 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { GroupRepository } from '../repositories/index';
 import { Group } from '../DTOs/index';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
     try {
-
       const { groupName, groupImage, groupDuration, groupType } = req.body;
       if (!groupName || !groupImage || !groupDuration) {
         res.status(400).json('Campo obrigatório não preenchido');
@@ -49,7 +48,6 @@ class GroupController {
   async enterGroup(req: Request, res: Response) {
     try {
       const { groupCode, userId } = req.params;
-
       const checkGroup = await GroupRepository.findByCode(groupCode);
       if (!checkGroup) {
         res.status(404).json({ message: 'Grupo não encontrado' });
@@ -122,6 +120,51 @@ class GroupController {
     } catch (error) {
       res.status(500).json({
         error: 'internal server error',
+      });
+    }
+  }
+
+  async getAllGroups(req: Request, res: Response, next: NextFunction) {
+    try {
+      const groups = await GroupRepository.getAll();
+
+      res.locals = {
+        status: 200,
+        message: 'Grupos encontrados',
+        data: groups,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getRanking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { groupId } = req.params;
+
+      const group = await GroupRepository.findById(groupId);
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Grupo não encontrado',
+        });
+      }
+
+      const ranking = await GroupRepository.ranking(groupId);
+
+      res.locals = {
+        status: 200,
+        message: 'Ranking encontrado',
+        data: ranking,
+      };
+
+      return next();
+    } catch (error) {
+      return next({
+        status: 500,
+        message: 'internal server error',
       });
     }
   }
