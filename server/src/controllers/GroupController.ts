@@ -6,19 +6,27 @@ import uploadImage from '../services/cloudinaryService';
 class GroupController {
   async createGroup(req: Request, res: Response) {
     try {
-      const { groupName, groupDuration, groupType } = req.body;
-      if (!groupName || !req.file || !groupDuration) {
-        res.status(400).json('Campo obrigatório não preenchido');
-        return;
-      }
 
-      const imageUrl = await uploadImage(req.file.path);
+      const data = {
+        name: req.body.groupName,
+        duration: req.body.groupDuration,
+        type: req.body.groupType,
+        image: req.file,
+      };
+        
+      const parsedData = Group.parse(data);
+
+      console.log("got here");
+
+      const imageUrl = await uploadImage(parsedData.image.path);
+
+      console.log("got here 2");
 
       const newGroup = await GroupRepository.create({
-        name: groupName,
+        name: parsedData.name,
         image: imageUrl,
-        duration: groupDuration,
-        type: groupType,
+        duration: parsedData.duration,
+        type: parsedData.type,
         active: true,
         code: '',
       });
