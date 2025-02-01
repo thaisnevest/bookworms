@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { GroupController } from '../controllers';
+import  upload  from '../middlewares/multer';
 
 const groupRouter = Router();
 
 // adicionar achar grupo pelo usuário?
-groupRouter.post('/', GroupController.createGroup); // criar grupo usando o body
+groupRouter.post('/', upload.single('groupImage') ,GroupController.createGroup); // criar grupo usando o body
 groupRouter.get('/', GroupController.getAllGroups); // pegar todos os grupos
 groupRouter.get('/:groupId', GroupController.getGroup); // informacoes de grupo especifico
 groupRouter.get('/ranking/:groupId', GroupController.getRanking); // pegar ranking de um grupo

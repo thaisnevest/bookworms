@@ -1,19 +1,22 @@
 import { NextFunction, Request, Response } from 'express';
 import { GroupRepository } from '../repositories/index';
 import { Group } from '../DTOs/index';
+import uploadImage from '../services/cloudinaryService';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
     try {
-      const { groupName, groupImage, groupDuration, groupType } = req.body;
-      if (!groupName || !groupImage || !groupDuration) {
+      const { groupName, groupDuration, groupType } = req.body;
+      if (!groupName || !req.file || !groupDuration) {
         res.status(400).json('Campo obrigatório não preenchido');
         return;
-      } // essa parte vai sair quando resolvermos a imagem, isso é parte do zod
+      }
+
+      const imageUrl = await uploadImage(req.file.path);
 
       const newGroup = await GroupRepository.create({
         name: groupName,
-        image: groupImage,
+        image: imageUrl,
         duration: groupDuration,
         type: groupType,
         active: true,
