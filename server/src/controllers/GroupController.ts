@@ -16,11 +16,7 @@ class GroupController {
         
       const parsedData = Group.parse(data);
 
-      console.log("got here");
-
       const imageUrl = await uploadImage(parsedData.image.path);
-
-      console.log("got here 2");
 
       const newGroup = await GroupRepository.create({
         name: parsedData.name,
