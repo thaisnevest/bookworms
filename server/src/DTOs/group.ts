@@ -7,28 +7,24 @@ export const Group = z.object({
   })
   .regex(/^[a-zA-z0-9\s]+$/,{message: 'The name can only contain letters and numbers'}),
 
-  // image: z.custom<File>((file) => {
-  //   if (!(file instanceof File)) {
-  //     throw new Error('The image must be a valid file');
-  //   }
-  //   const maxSize = 1024 * 1024 // tamanho max da imagem;
-  //   const validTypes = ['image/png'];
-  //   if (!validTypes.includes(file.type)) {
-  //     throw new Error('The image must be a PNG file');
-  //   }
-  //   if (file.size > maxSize) {
-  //     throw new Error('The image must be smaller than 5 MB');
-  //   }
-  //   return true;
-  // }, {
-  //   message: 'Invalid file',
-  // }),
-
-  duration: z.date({
-    invalid_type_error: 'The duration should be a date',
-    required_error: 'The duration is mandatory'
+  image: z.object({
+    mimetype: z.string().refine(val => val === 'image/png', {
+      message: 'the image must be a png file'
+    }),
+    size: z.number().max(1024 * 1024, {
+      message: 'the image must be smaller then 1MB'
+    }),
+    path: z.string()
   }),
 
+  duration: z.preprocess(
+    (arg) => (typeof arg === 'string' ? new Date(arg) : arg),
+    z.date({
+      invalid_type_error: 'The duration should be a date',
+      required_error: 'The duration is mandatory'
+    })
+  ),
+  
   type: z.enum(['CHECKIN', 'PAGES'], {
     required_error: 'The competition type is mandatory'
   })
