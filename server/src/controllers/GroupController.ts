@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { GroupRepository } from '../repositories/index';
 import { Group } from '../DTOs/index';
 import uploadImage from '../services/cloudinaryService';
+import { z } from 'zod';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
@@ -28,7 +29,12 @@ class GroupController {
       });
       res.status(200).json(newGroup);
     } catch (error) {
-      res.status(500).json({
+
+      if(error instanceof z.ZodError){
+        return res.status(400).json({error: error.errors});
+      }
+
+      return res.status(500).json({
         error: 'internal server error',
       });
     }
