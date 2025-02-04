@@ -16,25 +16,7 @@ const envSchema = z.object({
   S3_SECRET: z.string().optional(),
 });
 
-const devEnvSchema = envSchema.extend({
-  DATABASE_TYPE: z.string(),
-  DATABASE_HOST: z.string(),
-  DATABASE_PORT: z.coerce.number(),
-  DATABASE_USER: z.string(),
-  DATABASE_PASSWORD: z.string(),
-  DATABASE_DB: z.string(),
-
-  DATABASE_TEST_HOST: z.string(),
-  DATABASE_TEST_PORT: z.coerce.number(),
-  DATABASE_TEST_USER: z.string(),
-  DATABASE_TEST_PASSWORD: z.string(),
-  DATABASE_TEST_DB: z.string(),
-});
-
-const envValidation =
-  process.env.NODE_ENV !== 'production'
-    ? devEnvSchema.safeParse(process.env)
-    : envSchema.safeParse(process.env);
+const envValidation = envSchema.safeParse(process.env);
 
 if (!envValidation.success) {
   console.error('Invalid environment variables', envValidation.error.format());

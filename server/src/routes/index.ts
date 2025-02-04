@@ -1,16 +1,11 @@
 import { Router } from 'express';
-
-import UserRouter from './UserRoutes';
-import AuthRouter from './AuthRoutes';
-import FileRouter from './FileRoutes';
+import GroupRoutes from './GroupRoutes';
 
 const router = Router();
 
-router.use('/user', UserRouter);
-router.use('/sessions', AuthRouter);
-router.use('/file', FileRouter);
+router.use('/groups', GroupRoutes);
 router.route('/').get((_, res) => {
-  res.status(200).send('Made with 💚 and &lt; &#x0002F; &gt; by CITi');
+  res.status(200).send('made by bookworms');
 });
 
 export default router;
