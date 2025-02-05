@@ -1,19 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
-import { GroupRepository } from '../repositories/index';
+import { GroupRepository, PostRepository } from '../repositories/index';
 import { Group } from '../DTOs/index';
 import uploadImage from '../services/cloudinaryService';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
     try {
-
       const data = {
         name: req.body.groupName,
         duration: req.body.groupDuration,
         type: req.body.groupType,
         image: req.file,
       };
-        
+
       const parsedData = Group.parse(data);
 
       const imageUrl = await uploadImage(parsedData.image.path);
@@ -165,6 +164,54 @@ class GroupController {
         status: 200,
         message: 'Ranking encontrado',
         data: ranking,
+      };
+
+      return next();
+    } catch (error) {
+      return next({
+        status: 500,
+        message: 'internal server error',
+      });
+    }
+  }
+
+  async updateMemberScore(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { groupId, userId, postId } = req.params;
+
+      const group = await GroupRepository.findById(groupId);
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Grupo não encontrado',
+        });
+      }
+
+      console.log(group.type);
+      if (group.type === 'CHECKIN') {
+        // score by checkin
+        const now = new Date();
+        const userMadeCheckin = await PostRepository.getUserPostsin(
+          userId,
+          now,
+        );
+        if (!userMadeCheckin)
+          await GroupRepository.changeScoreSingle(userId, 1);
+      } else {
+        // score by number of pages
+        const post = await PostRepository.findById(postId);
+        if (!post) {
+          return next({
+            status: 404,
+            message: 'Post não encontrado',
+          });
+        }
+        await GroupRepository.changeScoreSingle(userId, post.numPages);
+      }
+
+      res.locals = {
+        status: 200,
+        message: 'Pontuação atualizada',
       };
 
       return next();
