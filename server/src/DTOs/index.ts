@@ -1,3 +1,5 @@
-import {Group} from './group';
+import { Group } from './group';
+import { Comment } from './comment';
 
-export {Group};
+export { Group };
+export { Comment };

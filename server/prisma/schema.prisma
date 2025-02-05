@@ -1,11 +1,11 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -17,10 +17,10 @@ model User {
   score    Int       @default(0)
   bio      String?
   image    String?
-  posts    Post[]
-  coments  Comment[]
-  group    Groups?   @relation(fields: [groupId], references: [id])
   groupId  String?
+  coments  Comment[]
+  posts    Post[]
+  group    Groups?   @relation(fields: [groupId], references: [id])
 }
 
 model Post {
@@ -30,9 +30,9 @@ model Post {
   image     String
   createdAt DateTime  @default(now())
   numPages  Int
-  author    User      @relation(fields: [authorId], references: [id])
   authorId  String
   coments   Comment[]
+  author    User      @relation(fields: [authorId], references: [id])
 }
 
 model Groups {
@@ -51,10 +51,10 @@ model Comment {
   id        String   @id @default(uuid())
   text      String
   createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id])
   postId    String
-  author    User     @relation(fields: [authorId], references: [id])
   authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 enum TypeScore {
