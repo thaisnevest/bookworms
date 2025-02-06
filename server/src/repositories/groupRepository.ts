@@ -120,6 +120,17 @@ class GroupRepository {
 
     return ranking;
   }
+
+  async deactivateExpired(currentDate: Date) {
+    await prisma.groups.updateMany({
+      where: { 
+        duration: { lt: currentDate }
+      },
+      data: {
+        active: false
+      },
+    });
+  }
 }
 
 export default new GroupRepository();
