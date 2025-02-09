@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { GroupRepository } from '../repositories/index';
-import { Group } from '../DTOs/index';
+import { Group, updateGroup } from '../DTOs/index';
 import uploadImage from '../services/cloudinaryService';
 import { z } from 'zod';
 
 class GroupController {
   async createGroup(req: Request, res: Response) {
-    try {
 
+    try {
       const data = {
         name: req.body.groupName,
         duration: req.body.groupDuration,
@@ -30,6 +30,52 @@ class GroupController {
       res.status(200).json(newGroup);
     } catch (error) {
 
+      if(error instanceof z.ZodError){
+        return res.status(400).json({error: error.errors});
+      }
+
+      return res.status(500).json({
+        error: 'internal server error',
+      });
+    }
+  }
+
+  async updateGroup(req: Request, res: Response) {
+    try {
+
+      // pega o grupo com as infos antigas
+      const { groupId } = req.params;
+      const currentGroup = await GroupRepository.findById(groupId); 
+      if(!currentGroup){
+        res.status(404).json({ message: 'Grupo não encontrado' });
+        return;
+      }
+
+      // testa no zod
+      const data = {
+        name: req.body.groupName,
+        duration: req.body.groupDuration,
+        type: req.body.groupType,
+        image: req.file ? req.file: undefined,
+      };
+      const parsedData= updateGroup.parse(data); 
+
+      // salva o url antigo e substitui caso o user tenha enviado um novo
+      let imageUrl = currentGroup.image; 
+      if(parsedData.image){              
+        imageUrl = await uploadImage(parsedData.image.path);
+      }
+
+      // salva os dados novos no bd      
+      const group = await GroupRepository.update(groupId, {
+        name: parsedData.name,
+        duration: parsedData.duration,
+        type: parsedData.type,
+        image: imageUrl
+      });
+      res.status(200).json(group);
+
+    }catch(error){
       if(error instanceof z.ZodError){
         return res.status(400).json({error: error.errors});
       }

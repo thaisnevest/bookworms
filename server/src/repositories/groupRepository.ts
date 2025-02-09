@@ -47,6 +47,11 @@ class GroupRepository {
     });
   }
 
+  async update(groupId: string, data: Prisma.GroupsUpdateInput): Promise<Groups>{
+    const updatedGroup = await prisma.groups.update({ where: { id: groupId }, data });
+    return updatedGroup;
+  }
+
   async findById(groupId: string): Promise<Groups | null> {
     const group = await prisma.groups.findUnique({
       where: { id: groupId },

@@ -29,3 +29,5 @@ export const Group = z.object({
     required_error: 'The competition type is mandatory'
   })
 });
+
+export const updateGroup = Group.partial();
