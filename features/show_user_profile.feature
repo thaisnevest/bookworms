@@ -36,7 +36,7 @@ Then eu vejo uma lista com os livros favoritos do usuário em destaque (Top 3)
 And cada livro exibe a capa, título e autor
 
 Scenario: Usuário possui menos que 3 livros favoritos 
-Given eu estou na página de perfil de "joazinho_45@gmail.com"
+Given eu estou na página de perfil de "luisx3@gmail.com"
 When eu navego até a seção "Favoritos"
 And o usuário possui 2 ou menos livros favoritos
 Then eu vejo os livros favoritos do usuário exibidos em destaque
@@ -44,7 +44,7 @@ And cada livro exibe a capa, título e autor
 And os espaços restantes da lista permanecem vazios
 
 Scenario: Visualizar as publicações de um usuário
-Given eu estou na página de perfil "joazinho_45@gmail.com"
+Given eu estou na página de perfil "luisx3@gmail.com"
 When eu navego até a seção "Publicações"
 Then eu vejo a lista de publicações feitas pelo usuário em ordem cronológica
 And cada publicação exibe o titulo, conteudo, data e o número de interações (curtidas/comentarios)
