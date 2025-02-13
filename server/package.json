@@ -44,8 +44,7 @@
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "push": "cross-env DATABASE_HOST='localhost' prisma db push",
-    "test:ci": "cross-env DATABASE_URL='postgres://postgres:postgres@localhost:5432/postgres' prisma db push && cross-env JWT_REFRESH_SECRET=CITi JWT_ACCESS_SECRET=CITi DATABASE_URL='postgres://postgres:postgres@localhost:5432/postgres' jest --runInBand --ci",
-    "test": "cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/boilerplate-test' prisma db push && cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/boilerplate-test' jest --runInBand",
+    "test": "cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' prisma db push && cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' jest --runInBand",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
