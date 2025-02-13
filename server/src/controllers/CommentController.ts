@@ -6,7 +6,8 @@ class CommentController {
   // Criar um comentário
   async createComment(req: Request, res: Response) {
     try {
-      const { postId, authorId, text } = req.body;
+      const validatedData = Comment.parse(req.body);
+      const { postId, authorId, text } = validatedData;
 
       // Criando o comentário
       const newComment = await CommentRepository.create({
@@ -54,10 +55,13 @@ class CommentController {
   // Atualizar comentário
   async updateComment(req: Request, res: Response) {
     try {
+      const validatedData = Comment.pick({ text: true }).parse(req.body);
       const { commentId } = req.params;
-      const { text } = req.body;
 
-      const updatedComment = await CommentRepository.update(commentId, text);
+      const updatedComment = await CommentRepository.update(
+        commentId,
+        validatedData.text,
+      );
       res.status(200).json({
         message: 'Comentário atualizado com sucesso',
         data: updatedComment,
