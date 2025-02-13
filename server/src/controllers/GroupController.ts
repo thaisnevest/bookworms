@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
 import { GroupRepository } from '../repositories/index';
 import { Group, updateGroup } from '../DTOs/index';
 import uploadImage from '../services/cloudinaryService';
-import { z } from 'zod';
 
 class GroupController {
-  async createGroup(req: Request, res: Response) {
+  async createGroup(req: Request, res: Response): Promise<Response> {
 
     try {
       const data = {
@@ -27,7 +27,8 @@ class GroupController {
         active: true,
         code: '',
       });
-      res.status(200).json(newGroup);
+      return res.status(200).json(newGroup);
+
     } catch (error) {
 
       if(error instanceof z.ZodError){
@@ -40,15 +41,14 @@ class GroupController {
     }
   }
 
-  async updateGroup(req: Request, res: Response) {
+  async updateGroup(req: Request, res: Response): Promise<Response> {
     try {
 
       // pega o grupo com as infos antigas
       const { groupId } = req.params;
       const currentGroup = await GroupRepository.findById(groupId); 
       if(!currentGroup){
-        res.status(404).json({ message: 'Grupo não encontrado' });
-        return;
+        return res.status(404).json({ message: 'Grupo não encontrado' });
       }
 
       // testa no zod
@@ -73,7 +73,7 @@ class GroupController {
         type: parsedData.type,
         image: imageUrl
       });
-      res.status(200).json(group);
+      return res.status(200).json(group);
 
     }catch(error){
       if(error instanceof z.ZodError){
@@ -86,67 +86,64 @@ class GroupController {
     }
   }
 
-  async getGroup(req: Request, res: Response) {
+  async getGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { groupId } = req.params;
       const group = await GroupRepository.findById(groupId);
       if (!group) {
-        res.status(404).json({ message: 'Grupo não encontrado' });
-        return;
+        return res.status(404).json({ message: 'Grupo não encontrado' });
       }
+      return res.status(200).json(group);
 
-      res.status(200).json(group);
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         message: 'internal server error',
         error: (error as Error).message,
       });
     }
   }
 
-  async enterGroup(req: Request, res: Response) {
+  async enterGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { groupCode, userId } = req.params;
       const checkGroup = await GroupRepository.findByCode(groupCode);
       if (!checkGroup) {
-        res.status(404).json({ message: 'Grupo não encontrado' });
-        return;
+        return res.status(404).json({ message: 'Grupo não encontrado' });
       }
 
       await GroupRepository.changeScoreSingle(userId, 0);
-      // falta checar se o user existe, falta as rotas do user para isso(eu não sei se é necessário mesmo pq o user vai estar logado, como ele não vai existir?)
 
       const updatedGroup = await GroupRepository.enter(groupCode, userId);
-      res.status(200).json(updatedGroup);
+      return res.status(200).json(updatedGroup);
+
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal server error',
       });
     }
   }
 
-  async leaveGroup(req: Request, res: Response) {
+  async leaveGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { userId } = req.params;
       // falta checar se o user existe, é necessário as rotas do user para isso
 
       const updatedUser = await GroupRepository.leave(userId);
-      res.status(200).json(updatedUser);
+      return res.status(200).json(updatedUser);
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal server error',
       });
     }
   }
 
-  async resetGroup(req: Request, res: Response) {
+  async resetGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { groupId } = req.params;
 
       const group = await GroupRepository.findById(groupId);
       if (!group) {
-        res.status(404).json({ message: 'Grupo não encontrado' });
-        return;
+        return res.status(404).json({ message: 'Grupo não encontrado' });
       }
 
       const duration = group.duration.getTime() - group.createdAt.getTime();
@@ -155,35 +152,34 @@ class GroupController {
       await GroupRepository.changeScoreMultiple(groupId, 0);
 
       const updatedGroup = await GroupRepository.reset(groupId, newDate);
-      res.status(200).json({ message: 'Competição reiniciada', updatedGroup });
+      return res.status(200).json({ message: 'Competição reiniciada', updatedGroup });
+
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal server error',
       });
     }
   }
 
-  async deleteGroup(req: Request, res: Response) {
+  async deleteGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { groupId } = req.params;
 
       const group = await GroupRepository.findById(groupId);
       if (!group) {
-        res.status(404).json({ message: 'Grupo não encontrado' });
-        return;
+        return res.status(404).json({ message: 'Grupo não encontrado' });
       }
-
       const deletedGroup = await GroupRepository.delete(groupId);
+      return res.status(200).json({ message: 'Grupo deletado', deletedGroup });
 
-      res.status(200).json({ message: 'Grupo deletado', deletedGroup });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal server error',
       });
     }
   }
 
-  async getAllGroups(req: Request, res: Response, next: NextFunction) {
+  async getAllGroups(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const groups = await GroupRepository.getAll();
 
@@ -199,7 +195,7 @@ class GroupController {
     }
   }
 
-  async getRanking(req: Request, res: Response, next: NextFunction) {
+  async getRanking(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { groupId } = req.params;
 
