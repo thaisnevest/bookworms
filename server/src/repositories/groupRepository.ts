@@ -109,17 +109,6 @@ class GroupRepository {
 
     return deletedGroup;
   }
-
-  async ranking(groupId: string): Promise<User[]> {
-    const ranking = await prisma.user.findMany({
-      where: { groupId },
-      orderBy: {
-        score: 'desc',
-      },
-    });
-
-    return ranking;
-  }
 }
 
 export default new GroupRepository();

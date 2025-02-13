@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { GroupRepository, PostRepository } from '../repositories/index';
+import { GroupRepository } from '../repositories/index';
 import { Group } from '../DTOs/index';
 import uploadImage from '../services/cloudinaryService';
 
@@ -143,83 +143,6 @@ class GroupController {
       return next();
     } catch (error) {
       return next(error);
-    }
-  }
-
-  async getRanking(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { groupId } = req.params;
-
-      const group = await GroupRepository.findById(groupId);
-      if (!group) {
-        return next({
-          status: 404,
-          message: 'Grupo não encontrado',
-        });
-      }
-
-      const ranking = await GroupRepository.ranking(groupId);
-
-      res.locals = {
-        status: 200,
-        message: 'Ranking encontrado',
-        data: ranking,
-      };
-
-      return next();
-    } catch (error) {
-      return next({
-        status: 500,
-        message: 'internal server error',
-      });
-    }
-  }
-
-  async updateMemberScore(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { groupId, userId, postId } = req.params;
-
-      const group = await GroupRepository.findById(groupId);
-      if (!group) {
-        return next({
-          status: 404,
-          message: 'Grupo não encontrado',
-        });
-      }
-
-      console.log(group.type);
-      if (group.type === 'CHECKIN') {
-        // score by checkin
-        const now = new Date();
-        const userMadeCheckin = await PostRepository.getUserPostsin(
-          userId,
-          now,
-        );
-        if (!userMadeCheckin)
-          await GroupRepository.changeScoreSingle(userId, 1);
-      } else {
-        // score by number of pages
-        const post = await PostRepository.findById(postId);
-        if (!post) {
-          return next({
-            status: 404,
-            message: 'Post não encontrado',
-          });
-        }
-        await GroupRepository.changeScoreSingle(userId, post.numPages);
-      }
-
-      res.locals = {
-        status: 200,
-        message: 'Pontuação atualizada',
-      };
-
-      return next();
-    } catch (error) {
-      return next({
-        status: 500,
-        message: 'internal server error',
-      });
     }
   }
 }

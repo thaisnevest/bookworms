@@ -8,14 +8,9 @@ const groupRouter = Router();
 groupRouter.post('/', upload.single('groupImage'), GroupController.createGroup); // criar grupo usando o body
 groupRouter.get('/', GroupController.getAllGroups); // pegar todos os grupos
 groupRouter.get('/:groupId', GroupController.getGroup); // informacoes de grupo especifico
-groupRouter.get('/ranking/:groupId', GroupController.getRanking); // pegar ranking de um grupo
 groupRouter.put('/enter/:groupCode/:userId', GroupController.enterGroup); // entrar em um grupo usando código do grupo e id do usuário
 groupRouter.put('/leave/:userId', GroupController.leaveGroup); // sair de um grupo
 groupRouter.put('/reset/:groupId', GroupController.resetGroup); // resetar o tempo de competicao de um grupo
-groupRouter.put(
-  '/score/:groupId/:userId/:postId',
-  GroupController.updateMemberScore,
-); // atualizar score de um membro
 groupRouter.delete('/:groupId', GroupController.deleteGroup); // deletar grupo
 
 export default groupRouter;
