@@ -8,11 +8,59 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
+model User {
+  id       String    @id @default(uuid())
+  name     String
+  username String    @unique
+  email    String    @unique
+  password String
+  score    Int       @default(0)
+  bio      String?
+  image    String?
+  posts    Post[]
+  coments  Comment[]
+  group    Groups?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  groupId  String?
 }
 
-model Example {
-  id    Int     @id @default(autoincrement())
-  title String
+model Post {
+  id        String    @id @default(uuid())
+  title     String
+  body      String?
+  image     String
+  createdAt DateTime  @default(now())
+  numPages  Int
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  coments   Comment[]
+  group     Groups     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+}
+
+model Groups {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  name      String
+  image     String
+  createdAt DateTime  @default(now())
+  active    Boolean
+  duration  DateTime
+  type      TypeScore
+  members   User[]
+  posts     Post[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+}
+
+enum TypeScore {
+  CHECKIN
+  PAGES
 }

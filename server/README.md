@@ -1,4 +1,5 @@
 # Server
+
 Back-end development with Node.js🛠️
 
 ## Running the project
@@ -24,31 +25,20 @@ SERVER_PORT=3001
 NODE_ENV=development
 
 # ###### DATABASE SETTINGS #######
-DATABASE_TYPE=postgres
-DATABASE_HOST=${PROJECT_NAME}-db
+DATABASE_URL=postgresql://postgres.erbtihwtnntpgrzueyfo:Livrosminhocas@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
 DATABASE_PORT=5432
-DATABASE_USER=postgres
-DATABASE_PASSWORD=docker
-DATABASE_DB=${PROJECT_NAME}
+DATABASE_PASSWORD=Livrosminhocas
 
 # ###### TEST DATABASE SETTINGS #######
-DATABASE_TEST_HOST=localhost
 DATABASE_TEST_PORT=5433
 DATABASE_TEST_USER=postgres
 DATABASE_TEST_PASSWORD=docker
 DATABASE_TEST_DB=bookworms-test
 
-DATABASE_URL=${DATABASE_TYPE}://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_DB}
-
-# ###### JWT SETTINGS FOR AUTHENTICATION #######
-JWT_ACCESS_SECRET=0551c0ed-6389-46b1-839e-2e28fc191c89 # token for 30sec
-JWT_REFRESH_SECRET=92fba49f6912d14733332bb9ebaac1562f51ee685594acf103d71f685f70868b # token for 7 days
-
-# ###### S3 SETTINGS FOR FILE UPLOADS #######
-S3_ENDPOINT=XXXXXX.digitaloceanspaces.com
-S3_BUCKET=exemplo-bucket
-S3_KEY=
-S3_SECRET=
+# ###### IMAGE UPLOAD SETTINGS #######
+PHOTOS_CLOUD_NAME=dzi0uoyed
+PHOTOS_API_KEY=832872197633967
+PHOTOS_API_SECRET=nEQCoptZL3CCDg2g0Iu2tpu-Jbc
 ```
 
 4. Para rodar o servidor, execute:
