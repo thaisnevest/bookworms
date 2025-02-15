@@ -1,4 +1,4 @@
-import { Group } from './group';
+import { Group, updateGroup } from './group';
 import { UserDTO } from './user';
 
-export { Group, UserDTO };
+export { Group, UserDTO, updateGroup };

@@ -7,9 +7,6 @@ const envSchema = z.object({
 
   DATABASE_URL: z.string(),
 
-  JWT_ACCESS_SECRET: z.string(),
-  JWT_REFRESH_SECRET: z.string(),
-
   S3_ENDPOINT: z.string().optional(),
   S3_BUCKET: z.string().optional(),
   S3_KEY: z.string().optional(),
