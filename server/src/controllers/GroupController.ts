@@ -27,7 +27,11 @@ class GroupController {
         active: true,
         code: '',
       });
-      return res.status(200).json(newGroup);
+
+      return res.status(200).json({
+        message: "Grupo criado",
+        group: newGroup
+      });
 
     } catch (error) {
 
@@ -73,7 +77,10 @@ class GroupController {
         type: parsedData.type,
         image: imageUrl
       });
-      return res.status(200).json(group);
+      return res.status(200).json({
+        message: "Grupo atualizado",
+        group: group
+      });
 
     }catch(error){
       if(error instanceof z.ZodError){
@@ -114,7 +121,10 @@ class GroupController {
       await GroupRepository.changeScoreSingle(userId, 0);
 
       const updatedGroup = await GroupRepository.enter(groupCode, userId);
-      return res.status(200).json(updatedGroup);
+      return res.status(200).json({
+        message: "Usuario inserido no grupo",
+        grupo: updatedGroup
+      });
 
     } catch (error) {
       return res.status(500).json({
@@ -126,10 +136,13 @@ class GroupController {
   async leaveGroup(req: Request, res: Response): Promise<Response> {
     try {
       const { userId } = req.params;
-      // falta checar se o user existe, é necessário as rotas do user para isso
 
       const updatedUser = await GroupRepository.leave(userId);
-      return res.status(200).json(updatedUser);
+      return res.status(200).json({
+        user: updatedUser,
+        message: "Usuario retirado do grupo"
+      });
+
     } catch (error) {
       return res.status(500).json({
         error: 'internal server error',
@@ -152,7 +165,10 @@ class GroupController {
       await GroupRepository.changeScoreMultiple(groupId, 0);
 
       const updatedGroup = await GroupRepository.reset(groupId, newDate);
-      return res.status(200).json({ message: 'Competição reiniciada', updatedGroup });
+      return res.status(200).json({
+        message: "Competição reiniciada",
+        group: updatedGroup
+      });
 
     } catch (error) {
       return res.status(500).json({
