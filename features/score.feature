@@ -3,6 +3,8 @@ Feature: Gerenciamento de pontos dentro de um grupo
     I want to acompanhar e gerenciar meus pontos
     So that eu possa entender minha posição no ranking e competir eficientemente
 
+    # ------------------------------ GUI scenarios ------------------------------ #
+
     Scenario: Ganho de pontos por páginas lidas
         Given Eu estou logado com o email "ana@gmail.com" e senha "1234#"
         And Eu participo do grupo de código "XYZKIO" com pontuação por "Página Lidas"
@@ -117,3 +119,89 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And Eu vejo que o usuário "Thaís" está em "1º lugar" no ranking com pontuação "12"
         And Eu vejo que o usuário "Arthur" está em "2º lugar" no ranking com pontuação "10"
         And Eu vejo que eu estou em "2º lugar" no ranking com pontuação "10"
+    
+    # ---------------------------- Service scenarios ---------------------------- #
+
+    Scenario: Consultar ranking de um grupo
+        Given o método getRanking do ScoreRepository retorna uma lista de usuários
+        And há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123", "groupId":"111", "score":"0"'
+        And há um usuário no sistema com '"id":"456", "groupId":"111", "score":"10"'
+        And há um usuário no sistema com '"id":"789", "groupId":"111", "score":"20"'
+        When uma requisição GET for enviada para "/score/ranking/111"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON com uma lista de usuários
+        And o usuário com '"id":"789"' deve ser o primeiro elemento da lista
+        And o usuário com '"id":"456"' deve ser o segundo elemento da lista
+        And o usuário com '"id":"123"' deve ser o terceiro elemento da lista
+    
+    Scenario: Consultar ranking de um grupo que não existe
+        Given o método getRanking do ScoreRepository retorna uma lista de usuários
+        And não há um grupo no sistema com '"id":"111"'
+        When uma requisição GET for enviada para "/score/ranking/111"
+        Then o status da resposta deve ser "404"
+        And a resposta deve conter a mensagem "Grupo não encontrado"
+    
+    Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por check-in
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"0"'
+        And há um post no sistema com '"id":"aaa","groupId":"111","userId":"123","createdAt":"2025-01-10"'
+        When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"1"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
+
+    Scenario: Inalterar a pontuação de um usuário depois de criar um post em grupo por check-in
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"1"'
+        And há um post no sistema com '"id":"aaa","groupId":"111","userId":"123","createdAt":"2025-01-10"'
+        And há um post no sistema com '"id":"bbb","groupId":"111","userId":"123","createdAt":"2025-01-10"'
+        When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"1"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
+
+    # Scenario: Alterar a pontuação de um usuário depois de atualizar um post em grupo por check-in
+    #     Given há um grupo no sistema com '"id":"111"'
+    #     And há um usuário no sistema com '"id":"123","groupId":"111", "score":"0"'
+    #     And há um post no sistema com '"id":"aaa","groupId":"111","userId":"123","createdAt":"2025-01-10"'
+    #     When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
+    #     Then o status da resposta deve ser "200"
+    #     And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"1"'
+    #     And a resposta deve contar a mensagem "Pontuação Atualizada!"
+    
+    Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"1"'
+        And o post com '"id":"aaa","groupId":"111","userId":"123","numPages":"10"' foi deletado do sistema
+        When uma requisição PUT for enviada para "/score/deletePost/111/123" com o corpo da requisição '"numPages":"10"'
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"0"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
+
+    Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por páginas lidas
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"0"'
+        And há um post no sistema com '"id":"aaa","groupId":"111","userId":"123","numPages":"10"'
+        When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"10"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
+    
+    Scenario: Alterar a pontuação de um usuário depois de atualizar um post em grupo por páginas lidas
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"10"'
+        And há um post no sistema com '"id":"aaa","groupId":"111","userId":"123","numPages":"10"' que foi atualizado para '"id":"aaa","groupId":"111","userId":"123","numPages":"20"'
+        When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"20"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
+    
+    Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por páginas lidas
+        Given há um grupo no sistema com '"id":"111"'
+        And há um usuário no sistema com '"id":"123","groupId":"111", "score":"10"'
+        And o post com '"id":"aaa","groupId":"111","userId":"123","numPages":"10"' foi deletado do sistema
+        When uma requisição PUT for enviada para "/score/deletePost/111/123" com o corpo da requisição '"numPages":"10"'
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com '"id":"123","groupId":"111", "score":"0"'
+        And a resposta deve contar a mensagem "Pontuação Atualizada!"
