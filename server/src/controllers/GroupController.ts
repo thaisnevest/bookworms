@@ -6,7 +6,6 @@ import uploadImage from '../services/cloudinaryService';
 
 class GroupController {
   async createGroup(req: Request, res: Response): Promise<Response> {
-
     try {
       const data = {
         name: req.body.groupName,
@@ -14,7 +13,7 @@ class GroupController {
         type: req.body.groupType,
         image: req.file,
       };
-        
+
       const parsedData = Group.parse(data);
 
       const imageUrl = await uploadImage(parsedData.image.path);
@@ -27,16 +26,15 @@ class GroupController {
         active: true,
         code: '',
       });
-
+      
       return res.status(200).json({
         message: "Grupo criado",
         group: newGroup
       });
 
     } catch (error) {
-
-      if(error instanceof z.ZodError){
-        return res.status(400).json({error: error.errors});
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
       }
 
       return res.status(500).json({
@@ -47,11 +45,10 @@ class GroupController {
 
   async updateGroup(req: Request, res: Response): Promise<Response> {
     try {
-
       // pega o grupo com as infos antigas
       const { groupId } = req.params;
-      const currentGroup = await GroupRepository.findById(groupId); 
-      if(!currentGroup){
+      const currentGroup = await GroupRepository.findById(groupId);
+      if (!currentGroup) {
         return res.status(404).json({ message: 'Grupo não encontrado' });
       }
 
@@ -60,22 +57,22 @@ class GroupController {
         name: req.body.groupName,
         duration: req.body.groupDuration,
         type: req.body.groupType,
-        image: req.file ? req.file: undefined,
+        image: req.file ? req.file : undefined,
       };
-      const parsedData= updateGroup.parse(data); 
+      const parsedData = updateGroup.parse(data);
 
       // salva o url antigo e substitui caso o user tenha enviado um novo
-      let imageUrl = currentGroup.image; 
-      if(parsedData.image){              
+      let imageUrl = currentGroup.image;
+      if (parsedData.image) {
         imageUrl = await uploadImage(parsedData.image.path);
       }
 
-      // salva os dados novos no bd      
+      // salva os dados novos no bd
       const group = await GroupRepository.update(groupId, {
         name: parsedData.name,
         duration: parsedData.duration,
         type: parsedData.type,
-        image: imageUrl
+        image: imageUrl,
       });
       return res.status(200).json({
         message: "Grupo atualizado",
@@ -101,7 +98,6 @@ class GroupController {
         return res.status(404).json({ message: 'Grupo não encontrado' });
       }
       return res.status(200).json(group);
-
     } catch (error) {
       return res.status(500).json({
         message: 'internal server error',
@@ -187,7 +183,6 @@ class GroupController {
       }
       const deletedGroup = await GroupRepository.delete(groupId);
       return res.status(200).json({ message: 'Grupo deletado', deletedGroup });
-
     } catch (error) {
       return res.status(500).json({
         error: 'internal server error',
@@ -195,7 +190,11 @@ class GroupController {
     }
   }
 
-  async getAllGroups(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllGroups(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const groups = await GroupRepository.getAll();
 
@@ -208,35 +207,6 @@ class GroupController {
       return next();
     } catch (error) {
       return next(error);
-    }
-  }
-
-  async getRanking(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { groupId } = req.params;
-
-      const group = await GroupRepository.findById(groupId);
-      if (!group) {
-        return next({
-          status: 404,
-          message: 'Grupo não encontrado',
-        });
-      }
-
-      const ranking = await GroupRepository.ranking(groupId);
-
-      res.locals = {
-        status: 200,
-        message: 'Ranking encontrado',
-        data: ranking,
-      };
-
-      return next();
-    } catch (error) {
-      return next({
-        status: 500,
-        message: 'internal server error',
-      });
     }
   }
 }
