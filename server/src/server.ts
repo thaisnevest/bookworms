@@ -1,5 +1,5 @@
 import 'dotenv/config';
-
+import './jobs/expiredGroup'
 import './env';
 import app from './app';
 import '@database';

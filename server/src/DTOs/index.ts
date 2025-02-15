@@ -1,3 +1,3 @@
-import {Group} from './group';
+import {Group, updateGroup} from './group';
 
-export {Group};
+export {Group, updateGroup};

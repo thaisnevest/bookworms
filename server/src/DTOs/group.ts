@@ -8,8 +8,8 @@ export const Group = z.object({
   .regex(/^[a-zA-z0-9\s]+$/,{message: 'The name can only contain letters and numbers'}),
 
   image: z.object({
-    mimetype: z.string().refine(val => val === 'image/png', {
-      message: 'the image must be a png file'
+    mimetype: z.string().refine(val => ['image/jpeg', 'image/png'].includes(val), {
+      message: 'the image must be a PNG OR JPG file'
     }),
     size: z.number().max(1024 * 1024, {
       message: 'the image must be smaller then 1MB'
@@ -29,3 +29,5 @@ export const Group = z.object({
     required_error: 'The competition type is mandatory'
   })
 });
+
+export const updateGroup = Group.partial();
