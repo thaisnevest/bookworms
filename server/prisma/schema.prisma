@@ -30,9 +30,11 @@ model Post {
   image     String
   createdAt DateTime  @default(now())
   numPages  Int
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   coments   Comment[]
-  author    User      @relation(fields: [authorId], references: [id])
+  group     Groups     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
 }
 
 model Groups {
@@ -45,16 +47,17 @@ model Groups {
   duration  DateTime
   type      TypeScore
   members   User[]
+  posts     Post[]
 }
 
 model Comment {
   id        String   @id @default(uuid())
   text      String
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
 }
 
 enum TypeScore {
