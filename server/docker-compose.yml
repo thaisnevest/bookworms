@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   server:
     build:
@@ -11,15 +13,14 @@ services:
       - '${SERVER_PORT}:3001'
     depends_on:
       - db
-    develop:
-      watch:
-        - action: sync
-          path: ./
-          target: /home/node/app
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
+    volumes:
+      - .:/home/node/app # Sincroniza o diretório do código do host com o contêiner
+      - /home/node/app/node_modules # Evita sobrescrever node_modules
+    command: ['npm', 'run', 'dev'] # Executa o comando de desenvolvimento, substitua conforme sua configuração
+    environment:
+      NODE_ENV: development # Configuração para garantir que o ambiente de desenvolvimento seja detectado
+    networks:
+      - bookworms-network
 
   db:
     image: postgres:16
@@ -34,6 +35,8 @@ services:
       - '${DATABASE_PORT}:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - bookworms-network
 
   test-db:
     image: postgres
@@ -51,11 +54,13 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+    networks:
+      - bookworms-network
 
 volumes:
   pgdata:
   node_modules:
 
-    # Documentação usada para a construção desse arquivo
-    # https://www.digitalocean.com/community/tutorials/containerizing-a-node-js-application-for-development-with-docker-compose-pt
-    # (principalmente o passo 4)
+networks:
+  bookworms-network:
+    driver: bridge

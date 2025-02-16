@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CommentRepository } from '../repositories/index';
 import { Comment } from '../DTOs/index';
+import { ZodError } from 'zod';
 
 class CommentController {
   // Criar um comentário
@@ -26,10 +27,30 @@ class CommentController {
         data: newComment,
       });
     } catch (error) {
-      res.status(500).json({
-        message: 'Erro ao criar comentário',
-        error: (error as Error).message,
-      });
+      // Verificando se o erro é de validação do Zod
+      if (error instanceof ZodError) {
+        const errorMessages = error.errors.map((err) => err.message);
+
+        // Checar por mensagens específicas
+        if (errorMessages.includes('The comment cannot be empty')) {
+          res.status(400).json({ message: 'Comentário não pode ser vazio' });
+        } else if (
+          errorMessages.includes('The comment must not exceed 150 characters')
+        ) {
+          res
+            .status(400)
+            .json({ message: 'Comentário deve ter no máximo 150 caracteres' });
+        } else {
+          // Caso outros erros de validação sejam encontrados
+          res.status(400).json({ message: errorMessages.join(', ') });
+        }
+      } else {
+        // Para outros tipos de erro
+        res.status(500).json({
+          message: 'Erro ao criar comentário',
+          error: (error as Error).message,
+        });
+      }
     }
   }
 

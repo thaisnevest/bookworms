@@ -7,7 +7,7 @@ export const Comment = z.object({
       required_error: 'Comment text is mandatory',
     })
     .min(1, { message: 'The comment cannot be empty' })
-    .max(500, { message: 'The comment must not exceed 500 characters' }),
+    .max(150, { message: 'The comment must not exceed 150 characters' }),
 
   postId: z.string({
     invalid_type_error: 'Post ID must be a string',
