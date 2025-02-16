@@ -2,8 +2,6 @@ import { Post } from '@prisma/client';
 import prisma from '../database';
 
 class FeedRepository {
-  /* eslint-disable no-await-in-loop */
-
   // pega todos os posts do feed de um grupo específico
   async getFeed(groupId: string): Promise<Post[]> {
     const posts = await prisma.post.findMany({

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { feedRepository }from '../repositories/index';
+import { FeedRepository }from '../repositories';
 
 class FeedController {
   // método para pegar todos os posts do feed de um grupo
@@ -7,7 +7,7 @@ class FeedController {
     const { groupId } = req.params;
     
     try {
-      const posts = await feedRepository.getFeed(groupId); 
+      const posts = await FeedRepository.getFeed(groupId); 
       if (posts.length === 0) {
         res.status(404).json({ message: 'Nenhum post encontrado!' });
         return;
@@ -24,7 +24,7 @@ class FeedController {
     const { userId, groupId } = req.params;
 
     try {
-      const userFeed = await feedRepository.getUserFeed(userId, groupId); 
+      const userFeed = await FeedRepository.getUserFeed(userId, groupId); 
       if (userFeed.length === 0) {
         res.status(404).json({ message: `Nenhum post encontrado para o usuário ${userId}.` });
         return;
