@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { UserRepository } from '../repositories/index';
 import { UserDTO } from '../DTOs/index';
+import { ZodError } from 'zod';
 
 class UserController {
   async create(req: Request, res: Response) {
@@ -17,6 +18,13 @@ class UserController {
       const newUser = await UserRepository.create(parsedData);
       res.status(201).json(newUser);
     } catch (error) {
+      if (error instanceof ZodError) {
+        return res
+          .status(400)
+          .json({ message: 'Erro de validação', errors: error.errors });
+      }
+
+      console.error(error);
       res.status(500).json({ error: 'Erro interno no servidor' });
     }
   }

@@ -3,4 +3,4 @@ import UserRepository from './userRepository';
 import PostRepository from './postRepository';
 import ScoreRepository from './scoreRepository';
 
-export { GroupRepository, UserRepository, ScoreController };
+export { GroupRepository, UserRepository, PostRepository, ScoreRepository };
