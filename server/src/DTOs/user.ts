@@ -20,7 +20,7 @@ export const UserDTO = z.object({
 
   email: z
     .string({
-      required_error: 'O email é obrigatório',
+      required_error: 'Campo obrigatório não preenchido',
       invalid_type_error: 'O email deve ser uma string',
     })
     .email({ message: 'O email informado não é válido' }),
@@ -30,7 +30,7 @@ export const UserDTO = z.object({
       required_error: 'A senha é obrigatória',
       invalid_type_error: 'A senha deve ser uma string',
     })
-    .min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+    .min(6, { message: 'A senha deve conter no mínimo 6 caracteres' }),
 
   bio: z.string().optional(),
   image: z

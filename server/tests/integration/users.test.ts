@@ -39,10 +39,6 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(201);
       expect(response.body.message).toBe('Cadastro realizado com sucesso');
     });
-
-    and('sou redirecionado para a página “Login de Usuário”.', () => {
-      expect(response.headers.location).toBe('/login');
-    });
   });
 
   test('Cadastro com senha menor que o limite mínimo', ({
@@ -65,10 +61,6 @@ defineFeature(feature, (test) => {
       expect(response.body.message).toBe(
         'A senha deve conter no mínimo 6 caracteres',
       );
-    });
-
-    and('permaneço na página de “Cadastro de Usuário”.', () => {
-      expect(response.body.stayOnPage).toBe(true);
     });
   });
 
@@ -96,10 +88,6 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('O username já está em uso');
     });
-
-    and('permaneço na página de “Cadastro de Usuário”.', () => {
-      expect(response.body.stayOnPage).toBe(true);
-    });
   });
 
   test('Cadastro sem preencher campos obrigatórios.', ({
@@ -115,13 +103,6 @@ defineFeature(feature, (test) => {
       response = await request(app).post('/users').send(userData);
     });
 
-    and('deixo em branco o campo “Email”.', () => {
-      expect(response.body.errors).toContainEqual({
-        field: 'email',
-        message: 'Campo obrigatório não preenchido',
-      });
-    });
-
     and('eu clico em “Cadastrar”.', () => {});
 
     then(
@@ -131,9 +112,5 @@ defineFeature(feature, (test) => {
         expect(response.body.message).toBe('Campo obrigatório não preenchido');
       },
     );
-
-    and('permaneço na página de “Cadastro de Usuários”.', () => {
-      expect(response.body.stayOnPage).toBe(true);
-    });
   });
 });

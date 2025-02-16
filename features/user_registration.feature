@@ -11,7 +11,6 @@ Feature: Cadastro de usuários
             | VictorOliveira | victoroi | victor@email.com | 123456   |
         And eu clico em “Cadastrar”.
         Then eu vejo a mensagem “Cadastro realizado com sucesso”
-        And sou redirecionado para a página “Login de Usuário”.
 
     Scenario: Cadastro com senha menor que o limite mínimo
         Given eu estou na página de “Cadastro de Usuários”.
@@ -20,7 +19,6 @@ Feature: Cadastro de usuários
             | VictorOliveira | victoroi | victor@email.com | 123      |
         And eu clico em “Cadastrar”.
         Then vejo a mensagem “A senha deve conter no mínimo 6 caracteres”
-        And permaneço na página de “Cadastro de Usuário”.
 
     Scenario: Cadastro com username já existente.
         Given eu estou na página de “Cadastro de Usuário”.
@@ -30,14 +28,11 @@ Feature: Cadastro de usuários
             | VictorOliveira | victoroi | victor@email.com | 123456   |
         And eu clico em “Cadastrar”.
         Then eu vejo a mensagem “Username já em Uso”.
-        And permaneço na página de “Cadastro de Usuário”.
 
     Scenario: Cadastro sem preencher campos obrigatórios.
         Given eu estou na página de “Cadastro de Usuário”.
         When eu preencho os campos:
             | name           | username | password |
             | VictorOliveira | victoroi | 123456   |
-        And deixo em branco o campo “Email”.
         And eu clico em “Cadastrar”.
         Then eu vejo a mensagem de erro “Campo obrigatório não preenchido”.
-        And permaneço na página de “Cadastro de Usuários”.

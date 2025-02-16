@@ -6,26 +6,37 @@ import { ZodError } from 'zod';
 class UserController {
   async create(req: Request, res: Response) {
     try {
+      console.log('🔹 Recebendo requisição de cadastro:', req.body);
+
       const parsedData = UserDTO.parse(req.body);
+      console.log('✅ Dados validados com sucesso:', parsedData);
 
       const existingUser = await UserRepository.findByUsernameOrEmail(
         parsedData.username,
       );
       if (existingUser) {
+        console.log('⚠️ Usuário já existe:', existingUser);
         return res.status(400).json({ message: 'O username já está em uso' });
       }
 
       const newUser = await UserRepository.create(parsedData);
-      res.status(201).json(newUser);
+      console.log('🎉 Usuário criado com sucesso:', newUser);
+
+      return res.status(201).json({
+        message: 'Cadastro realizado com sucesso',
+        user: newUser,
+      });
     } catch (error) {
       if (error instanceof ZodError) {
-        return res
-          .status(400)
-          .json({ message: 'Erro de validação', errors: error.errors });
+        console.log('❌ Erro de validação:', error.errors);
+        return res.status(400).json({
+          message: error.errors[0].message,
+          errors: error.errors,
+        });
       }
 
-      console.error(error);
-      res.status(500).json({ error: 'Erro interno no servidor' });
+      console.error('🔥 Erro inesperado:', error);
+      return res.status(500).json({ error: 'Erro interno no servidor' });
     }
   }
 
