@@ -3,6 +3,8 @@ Feature: Feed de postagens de um grupo
     I want to acessar e interagir com o feed de postagens do grupo
     So that eu possa acompanhar as atualizações dos usuários sobre suas leituras
 
+    --------------------------------------------gui scenarios------------------------------------------------
+
     Scenario: Exibir postagens no feed
         Given Eu estou logado com o email "thais@gmail.com" e senha "password123"
         And Eu participo do grupo de código "GRP123"
@@ -74,3 +76,24 @@ Feature: Feed de postagens de um grupo
         And Eu seleciono a opção "Próxima página"
         Then Eu vejo mais 10 postagens da página "2" no feed
 
+-------------------------------------------------service scenarios--------------------------------------------
+
+
+    Scenario: Visualizar postagens de um grupo no feed
+        Given existe um grupo no sistema com id "1234"
+        And existe um usuário com id "6789" e username "thais" no grupo "1234"
+        And existe um post no grupo "1234" com id "444", criado pelo usuário "6789" em "2025-02-17"
+        When o usuário faz uma requisição GET para "/feed/groups/1234"
+        Then o status da resposta deve ser "200"
+        And o feed deve conter uma lista de postagens
+
+
+    Scenario: Filtrar postagens de um usuário no feed
+        Given existe um grupo no sistema com id "8524"
+        And existe um usuário com id "123" e username "thais" no grupo "8524"
+        And existe um usuário com id "456" e username "ana" no grupo "8524"
+        And existe um post no grupo "8524" com id "1111", criado pelo usuário "123" em "2025-02-17"
+        And existe um post no grupo "8524" com id "2222", criado pelo usuário "456" em "2025-02-17"
+        When o usuário faz uma requisição GET para "/feed/groups/8524/user/123"
+        Then o status da resposta deve ser "200"
+        And o feed deve conter apenas postagens do usuário "123"
