@@ -2,6 +2,7 @@ import { Prisma, Groups, User } from '@prisma/client';
 import prisma from '../database';
 import { generateCustomId } from '../utils/customCode';
 
+
 class GroupRepository {
   /* eslint-disable no-await-in-loop */
   async create(data: Prisma.GroupsCreateInput): Promise<Groups> {
