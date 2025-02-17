@@ -10,8 +10,8 @@ prisma
   .then(() => {
     console.log('📦 Successfully connected with database');
   })
-  .catch((error) => {
-    console.log('❌ Error connecting to database', error);
+  .catch((error: Error) => {
+    console.log('❌ Error connecting to database', error.message);
   });
 
 export default prisma;

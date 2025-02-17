@@ -1,5 +1,6 @@
 import GroupRepository from './groupRepository';
+import UserRepository from './userRepository';
 import PostRepository from './postRepository';
 import ScoreRepository from './scoreRepository';
 
-export { GroupRepository, PostRepository, ScoreRepository };
+export { GroupRepository, UserRepository, PostRepository, ScoreRepository };
