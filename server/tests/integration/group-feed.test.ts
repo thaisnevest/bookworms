@@ -1,6 +1,6 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import '@types/jest'
 import supertest from 'supertest';
 import { TypeScore } from '@prisma/client';
 import app from '../../src/app';
