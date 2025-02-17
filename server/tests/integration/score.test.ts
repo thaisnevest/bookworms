@@ -39,12 +39,11 @@ const createPostinGroupCheckin = async (
   id: string,
   groupId: string,
   userId: string,
-  createdAt: string,
 ) => ({
   id,
   title: 'Post Title',
   image: '',
-  createdAt: new Date(createdAt),
+  createdAt: new Date(),
   numPages: 10,
   groupId,
   authorId: userId, // added authorId property
@@ -112,15 +111,10 @@ defineFeature(feature, (test) => {
 
   const givenPost = async (given: DefineStepFunction) => {
     given(
-      /^há um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)", createdAt "(.*)"$/,
-      async (postId, groupId, userId, createdAt) => {
+      /^há um post no sistema com id "(.*)", groupId "(.*)" e userId "(.*)" criado no dia atual$/,
+      async (postId, groupId, userId) => {
         // format and create post
-        const post = await createPostinGroupCheckin(
-          postId,
-          groupId,
-          userId,
-          createdAt,
-        );
+        const post = await createPostinGroupCheckin(postId, groupId, userId);
         try {
           await connection.get();
           await (await connection.get()).post.create({ data: post });
@@ -189,9 +183,12 @@ defineFeature(feature, (test) => {
   const thenUserwithScore = async (then: DefineStepFunction) => {
     then(
       /^deve ser retornado um JSON contendo o usuário com id "(.*)", groupId "(.*)", score "(.*)"$/,
-      async (userId, score) => {
-        console.log('RESPONSE: ', response.body);
-        if (response.body.data.score !== Number(score)) {
+      async (userId, groupId, score) => {
+        if (
+          response.body.data.score !== Number(score) ||
+          response.body.data.id !== userId ||
+          response.body.data.groupId !== groupId
+        ) {
           throw new Error(
             `Expected user with id ${userId} to have score ${score}`,
           );
