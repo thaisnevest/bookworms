@@ -1,11 +1,11 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -17,10 +17,10 @@ model User {
   score    Int       @default(0)
   bio      String?
   image    String?
-  posts    Post[]
-  coments  Comment[]
-  group    Groups?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
   groupId  String?
+  coments  Comment[]
+  posts    Post[]
+  group    Groups?   @relation(fields: [groupId], references: [id])
 }
 
 model Post {
@@ -52,7 +52,7 @@ model Groups {
 
 model Comment {
   id        String   @id @default(uuid())
-  text      String
+  text      String   @db.VarChar(150)
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
