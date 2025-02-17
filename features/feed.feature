@@ -77,8 +77,7 @@ Feature: Feed de postagens de um grupo
         Then Eu vejo mais 10 postagens da página "2" no feed
 
 -------------------------------------------------service scenarios--------------------------------------------
-
-
+    
     Scenario: Visualizar postagens de um grupo no feed
         Given existe um grupo no sistema com id "1234"
         And existe um usuário com id "6789" e username "thais" no grupo "1234"
@@ -97,3 +96,4 @@ Feature: Feed de postagens de um grupo
         When o usuário faz uma requisição GET para "/feed/groups/8524/user/123"
         Then o status da resposta deve ser "200"
         And o feed deve conter apenas postagens do usuário "123"
+
