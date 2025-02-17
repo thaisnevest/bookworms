@@ -54,13 +54,19 @@ class ScoreController {
       if (group.type === 'CHECKIN') {
         // score by checkin
         const now = new Date();
-        console.log(now.toLocaleString());
         const userMadeCheckin = await PostRepository.getUserPostsin(
           userId,
           now,
         );
-        if (userMadeCheckin.length === 1)
-          await ScoreRepository.addScore(userId, 1);
+        if (userMadeCheckin.length === 1) {
+          const user = await ScoreRepository.addScore(userId, 1);
+
+          res.locals = {
+            status: 200,
+            data: user,
+            message: 'Pontuação atualizada',
+          };
+        }
       } else {
         // score by number of pages
         const post = await PostRepository.findById(postId);
@@ -70,13 +76,14 @@ class ScoreController {
             message: 'Post não encontrado',
           });
         }
-        await ScoreRepository.addScore(userId, post.numPages);
-      }
+        const user = await ScoreRepository.addScore(userId, post.numPages);
 
-      res.locals = {
-        status: 200,
-        message: 'Pontuação atualizada',
-      };
+        res.locals = {
+          status: 200,
+          data: user,
+          message: 'Pontuação atualizada',
+        };
+      }
 
       return next();
     } catch (error) {
@@ -153,15 +160,22 @@ class ScoreController {
           userId,
           now,
         );
-        if (!userMadeCheckin) await ScoreRepository.removeScore(userId, 1);
+        if (!userMadeCheckin) {
+          const user = await ScoreRepository.removeScore(userId, 1);
+          res.locals = {
+            status: 200,
+            data: user,
+            message: 'Pontuação atualizada',
+          };
+        }
       } else if (group.type === 'PAGES') {
-        await ScoreRepository.removeScore(userId, numPages);
+        const user = await ScoreRepository.removeScore(userId, numPages);
+        res.locals = {
+          status: 200,
+          data: user,
+          message: 'Pontuação atualizada',
+        };
       }
-
-      res.locals = {
-        status: 200,
-        message: 'Pontuação atualizada',
-      };
 
       return next();
     } catch (error) {
