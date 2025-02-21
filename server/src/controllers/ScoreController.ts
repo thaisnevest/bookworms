@@ -54,7 +54,7 @@ class ScoreController {
       if (group.type === 'CHECKIN') {
         // score by checkin
         const now = new Date();
-        console.log(now.toLocaleString());
+        // console.log(now.toLocaleString());
         const userMadeCheckin = await PostRepository.getUserPostsin(
           userId,
           now,

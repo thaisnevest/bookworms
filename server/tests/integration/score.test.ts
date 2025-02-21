@@ -103,7 +103,7 @@ defineFeature(feature, (test) => {
           await (await connection.get()).user.create({ data: user });
           // console.log('User created successfully');
         } catch (error) {
-          console.error('Error creating user:', error);
+          // console.error('Error creating user:', error);
           throw error;
         }
       },
@@ -124,9 +124,9 @@ defineFeature(feature, (test) => {
         try {
           await connection.get();
           await (await connection.get()).post.create({ data: post });
-          console.log('Post created successfully');
+          // console.log('Post created successfully');
         } catch (error) {
-          console.error('Error creating post:', error);
+          // console.error('Error creating post:', error);
           throw error;
         }
       },
@@ -190,7 +190,7 @@ defineFeature(feature, (test) => {
     then(
       /^deve ser retornado um JSON contendo o usuário com id "(.*)", groupId "(.*)", score "(.*)"$/,
       async (userId, score) => {
-        console.log('RESPONSE: ', response.body);
+        // console.log('RESPONSE: ', response.body);
         if (response.body.data.score !== Number(score)) {
           throw new Error(
             `Expected user with id ${userId} to have score ${score}`,

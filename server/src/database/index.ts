@@ -8,7 +8,11 @@ const prisma = new PrismaClient({
 prisma
   .$connect()
   .then(() => {
-    console.log('📦 Successfully connected with database');
+    if (
+      process.env.DATABASE_URL !==
+      'postgres://postgres:docker@localhost:5433/bookworms-test'
+    )
+      console.log('📦 Successfully connected with database');
   })
   .catch((error: Error) => {
     console.log('❌ Error connecting to database', error.message);
