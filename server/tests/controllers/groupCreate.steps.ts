@@ -2,7 +2,7 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
-import { connection } from '../../src/Helper/database.config';
+import { connection } from '../../src/database/database.config';
 import app from '../../src/app';
 import groupRepository from '../../src/repositories/groupRepository';
 

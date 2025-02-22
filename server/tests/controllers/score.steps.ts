@@ -3,7 +3,7 @@ import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
 import { TypeScore } from '@prisma/client';
-import { connection } from '../../src/Helper/database.config';
+import { connection } from '../../src/database/database.config';
 import app from '../../src/app';
 import { GroupRepository } from '../../src/repositories';
 

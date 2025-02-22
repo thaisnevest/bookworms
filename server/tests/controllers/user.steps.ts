@@ -2,7 +2,7 @@
 import request from 'supertest';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { connection } from '../../src/Helper/database.config';
+import { connection } from '../../src/database/database.config';
 import app from '../../src/app';
 
 const feature = loadFeature('./tests/features/user_registration.feature');
