@@ -46,7 +46,7 @@ const createPostinGroupCheckin = async (
   createdAt: new Date(),
   numPages: 10,
   groupId,
-  authorId: userId, // added authorId property
+  authorId: userId,
 });
 
 defineFeature(feature, (test) => {
@@ -93,7 +93,7 @@ defineFeature(feature, (test) => {
 
   const givenUserinGroupwithScore = async (given: DefineStepFunction) => {
     given(
-      /^há um usuário no sistema com id "(.*)", username "(.*)", groupId "(.*)", score "(.*)"$/,
+      /^há um usuário no sistema com id "(.*)", username "(.*)", groupId "(.*)" e score "(.*)"$/,
       async (userId, username, groupId, score) => {
         // format and create user
         const user = await createUser(userId, username, groupId, Number(score));
@@ -117,43 +117,89 @@ defineFeature(feature, (test) => {
     );
   };
 
-  const whenGETRequest = async (when: DefineStepFunction) => {
-    when(/^uma requisição GET for enviada para "(.*)"$/, async (route) => {
-      response = await supertest(app).get(route);
-    });
+  const givenPostwithPages = async (given: DefineStepFunction) => {
+    given(
+      /^há um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)" e numPages "(.*)" criado no dia atual$/,
+      async (postId, groupId, userId, numPages) => {
+        // format and create post
+        const post = await createPostinGroupCheckin(postId, groupId, userId);
+        post.numPages = Number(numPages);
+        await connection.get();
+        await (await connection.get()).post.create({ data: post });
+        // console.log('Post created successfully');
+      },
+    );
   };
 
-  const whenPUTRequest = async (when: DefineStepFunction) => {
-    when(/^uma requisição PUT for enviada para "(.*)"$/, async (route) => {
-      response = await supertest(app).put(route);
-    });
+  const whenGETRanking = async (when: DefineStepFunction) => {
+    when(
+      /^é feita uma busca do ranking do group de id "(.*)"$/,
+      async (groupId) => {
+        response = await supertest(app).get(`/score/ranking/${groupId}`);
+      },
+    );
+  };
+
+  // const whenPUTRequest = async (when: DefineStepFunction) => {
+  //   when(/^uma requisição PUT for enviada para "(.*)"$/, async (route) => {
+  //     response = await supertest(app).put(route);
+  //   });
+  // };
+
+  const whenPOSTPost = async (when: DefineStepFunction) => {
+    when(
+      /^é criado um post no sistema com id "(.*)", groupId "(.*)" e userId "(.*)"$/,
+      async (postId, groupId, userId) => {
+        // format and create post
+        const post = await createPostinGroupCheckin(postId, groupId, userId);
+        await connection.get();
+        await (await connection.get()).post.create({ data: post });
+        // update score
+        response = await supertest(app).put(
+          `/score/createPost/${groupId}/${userId}/${postId}`,
+        );
+      },
+    );
+  };
+
+  const whenPUTPost = async (when: DefineStepFunction) => {
+    when(
+      /^é atualizado o número de páginas de um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)" de numPages "(.*)" para numPages "(.*)"$/,
+      async (postId, groupId, userId, currentNumPages, newNumPages) => {
+        // format and create post
+        await connection.get();
+        await (
+          await connection.get()
+        ).post.update({
+          where: { id: postId },
+          data: { numPages: Number(newNumPages) },
+        });
+        // update score
+        response = await supertest(app)
+          .put(`/score/putPost/${groupId}/${userId}/${postId}`)
+          .send({
+            currentNumPages,
+            newNumPages,
+          });
+      },
+    );
   };
 
   const thenStatusResponse = async (then: DefineStepFunction) => {
     then(/^o status da resposta deve ser "(.*)"$/, async (status) => {
-      if (response.status !== parseInt(status, 10)) {
-        throw new Error(
-          `Expected status ${status}, but got ${response.status}`,
-        );
-      }
+      expect(response.status).toBe(Number(status));
     });
   };
 
   const thenMessageResponse = async (then: DefineStepFunction) => {
     then(/^a resposta deve conter a mensagem "(.*)"$/, async (message) => {
-      if (response.body.message !== message) {
-        throw new Error(
-          `Expected message ${message}, but got ${response.body.message}`,
-        );
-      }
+      expect(response.body.message).toBe(message);
     });
   };
 
   const thenResponseArray = async (then: DefineStepFunction) => {
     then(/^deve ser retornado um JSON com uma lista de usuários$/, async () => {
-      if (!Array.isArray(response.body.data)) {
-        throw new Error('Expected an array of users');
-      }
+      expect(response.body.data).toBeInstanceOf(Array);
     });
   };
 
@@ -161,28 +207,18 @@ defineFeature(feature, (test) => {
     then(
       /^o usuário com id "(.*)" deve ser o elemento "(.*)" da lista$/,
       async (userId, position) => {
-        if (response.body.data[Number(position)].id !== userId) {
-          throw new Error(
-            `Expected user with id ${userId} at position ${position}`,
-          );
-        }
+        expect(response.body.data[Number(position)].id).toBe(userId);
       },
     );
   };
 
   const thenUserwithScore = async (then: DefineStepFunction) => {
     then(
-      /^deve ser retornado um JSON contendo o usuário com id "(.*)", groupId "(.*)", score "(.*)"$/,
+      /^deve ser retornado um JSON contendo o usuário com id "(.*)", groupId "(.*)" e score "(.*)"$/,
       async (userId, groupId, score) => {
-        if (
-          response.body.data.score !== Number(score) ||
-          response.body.data.id !== userId ||
-          response.body.data.groupId !== groupId
-        ) {
-          throw new Error(
-            `Expected user with id ${userId} to have score ${score}`,
-          );
-        }
+        expect(response.body.data.id).toBe(userId);
+        expect(response.body.data.groupId).toBe(groupId);
+        expect(response.body.data.score).toBe(Number(score));
       },
     );
   };
@@ -192,7 +228,7 @@ defineFeature(feature, (test) => {
     givenUserinGroupwithScore(and);
     givenUserinGroupwithScore(and);
     givenUserinGroupwithScore(and);
-    whenGETRequest(when);
+    whenGETRanking(when);
     thenStatusResponse(then);
     thenResponseArray(and);
     thenUserinPosition(and);
@@ -207,7 +243,7 @@ defineFeature(feature, (test) => {
     and,
   }) => {
     givenNoGroup(given);
-    whenGETRequest(when);
+    whenGETRanking(when);
     thenStatusResponse(then);
     thenMessageResponse(and);
   });
@@ -220,8 +256,37 @@ defineFeature(feature, (test) => {
   }) => {
     givenGroup(given);
     givenUserinGroupwithScore(and);
+    whenPOSTPost(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  test('Inalterar a pontuação de um usuário depois de criar um post em grupo por check-in', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
     givenPost(and);
-    whenPUTRequest(when);
+    whenPOSTPost(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  test('Inalterar a pontuação de um usuário depois de atualizar um post em grupo por check-in', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
+    givenPostwithPages(and);
+    whenPUTPost(when);
     thenStatusResponse(then);
     thenUserwithScore(and);
     thenMessageResponse(and);
