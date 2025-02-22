@@ -3,11 +3,11 @@ import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
 import { TypeScore } from '@prisma/client';
+import { connection } from '../../src/Helper/database.config';
 import app from '../../src/app';
 import { GroupRepository } from '../../src/repositories';
-import { connection } from '../Helper/database.config';
 
-const feature = loadFeature('../features/score.feature');
+const feature = loadFeature('./tests/features/score.feature');
 
 const createGroup = async (id: string) => ({
   id,
@@ -97,14 +97,9 @@ defineFeature(feature, (test) => {
       async (userId, username, groupId, score) => {
         // format and create user
         const user = await createUser(userId, username, groupId, Number(score));
-        try {
-          await connection.get();
-          await (await connection.get()).user.create({ data: user });
-          // console.log('User created successfully');
-        } catch (error) {
-          console.error('Error creating user:', error);
-          throw error;
-        }
+        await connection.get();
+        await (await connection.get()).user.create({ data: user });
+        // console.log('User created successfully');
       },
     );
   };
@@ -115,14 +110,9 @@ defineFeature(feature, (test) => {
       async (postId, groupId, userId) => {
         // format and create post
         const post = await createPostinGroupCheckin(postId, groupId, userId);
-        try {
-          await connection.get();
-          await (await connection.get()).post.create({ data: post });
-          console.log('Post created successfully');
-        } catch (error) {
-          console.error('Error creating post:', error);
-          throw error;
-        }
+        await connection.get();
+        await (await connection.get()).post.create({ data: post });
+        // console.log('Post created successfully');
       },
     );
   };
@@ -141,7 +131,7 @@ defineFeature(feature, (test) => {
 
   const thenStatusResponse = async (then: DefineStepFunction) => {
     then(/^o status da resposta deve ser "(.*)"$/, async (status) => {
-      if (response.status !== parseInt(status)) {
+      if (response.status !== parseInt(status, 10)) {
         throw new Error(
           `Expected status ${status}, but got ${response.status}`,
         );
