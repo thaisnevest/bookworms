@@ -47,14 +47,14 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "1"
         And a resposta deve conter a mensagem "Pontuação atualizada"
     
-    # Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
-    #     Given há um grupo no sistema com id "111"
-    #     And há um usuário no sistema com id "123", username "ana", groupId "111" e score "1"
-    #     And o post com id "aaa", groupId "111", userId "123","numPages":"10" foi deletado do sistema
-    #     When uma requisição PUT for enviada para "/score/deletePost/111/123" com o corpo da requisição '"numPages":"10"
-    #     Then o status da resposta deve ser "200"
-    #     And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
-    #     And a resposta deve conter a mensagem "Pontuação atualizada"
+    Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
+        Given há um grupo no sistema com id "111"
+        And há um usuário no sistema com id "123", username "ana", groupId "111" e score "1"
+        And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
+        When é deletado um post do sistema com id "aaa", groupId "111", userId "123" e numPages "10"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
+        And a resposta deve conter a mensagem "Pontuação atualizada"
 
     # Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por páginas lidas
     #     Given há um grupo no sistema com id "111"

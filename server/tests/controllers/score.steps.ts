@@ -97,7 +97,6 @@ defineFeature(feature, (test) => {
       async (userId, username, groupId, score) => {
         // format and create user
         const user = await createUser(userId, username, groupId, Number(score));
-        await connection.get();
         await (await connection.get()).user.create({ data: user });
         // console.log('User created successfully');
       },
@@ -110,7 +109,6 @@ defineFeature(feature, (test) => {
       async (postId, groupId, userId) => {
         // format and create post
         const post = await createPostinGroupCheckin(postId, groupId, userId);
-        await connection.get();
         await (await connection.get()).post.create({ data: post });
         // console.log('Post created successfully');
       },
@@ -124,7 +122,6 @@ defineFeature(feature, (test) => {
         // format and create post
         const post = await createPostinGroupCheckin(postId, groupId, userId);
         post.numPages = Number(numPages);
-        await connection.get();
         await (await connection.get()).post.create({ data: post });
         // console.log('Post created successfully');
       },
@@ -152,7 +149,6 @@ defineFeature(feature, (test) => {
       async (postId, groupId, userId) => {
         // format and create post
         const post = await createPostinGroupCheckin(postId, groupId, userId);
-        await connection.get();
         await (await connection.get()).post.create({ data: post });
         // update score
         response = await supertest(app).put(
@@ -167,7 +163,6 @@ defineFeature(feature, (test) => {
       /^é atualizado o número de páginas de um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)" de numPages "(.*)" para numPages "(.*)"$/,
       async (postId, groupId, userId, currentNumPages, newNumPages) => {
         // format and create post
-        await connection.get();
         await (
           await connection.get()
         ).post.update({
@@ -180,6 +175,22 @@ defineFeature(feature, (test) => {
           .send({
             currentNumPages,
             newNumPages,
+          });
+      },
+    );
+  };
+
+  const whenDELETEPost = async (when: DefineStepFunction) => {
+    when(
+      /^é deletado um post do sistema com id "(.*)", groupId "(.*)", userId "(.*)" e numPages "(.*)"$/,
+      async (postId, groupId, userId, numPages) => {
+        // format and create post
+        await (await connection.get()).post.delete({ where: { id: postId } });
+        // update score
+        response = await supertest(app)
+          .put(`/score/deletePost/${groupId}/${userId}`)
+          .send({
+            numPages,
           });
       },
     );
@@ -287,6 +298,30 @@ defineFeature(feature, (test) => {
     givenUserinGroupwithScore(and);
     givenPostwithPages(and);
     whenPUTPost(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  // Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
+  //       Given há um grupo no sistema com id "111"
+  //       And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
+  //       And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
+  //       When é deletado um post do sistema com id "aaa", groupId "111", userId "123" e numPages "10"
+  //       Then o status da resposta deve ser "200"
+  //       And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
+  //       And a resposta deve conter a mensagem "Pontuação atualizada"
+
+  test('Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
+    givenPostwithPages(and);
+    whenDELETEPost(when);
     thenStatusResponse(then);
     thenUserwithScore(and);
     thenMessageResponse(and);

@@ -165,7 +165,7 @@ class ScoreController {
           userId,
           now,
         );
-        if (!userMadeCheckin) {
+        if (userMadeCheckin.length === 0) {
           const user = await ScoreRepository.removeScore(userId, 1);
           res.locals = {
             status: 200,
