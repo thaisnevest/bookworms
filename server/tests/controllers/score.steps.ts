@@ -3,11 +3,11 @@ import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
 import { TypeScore } from '@prisma/client';
+import { connection } from '../../src/Helper/database.config';
 import app from '../../src/app';
 import { GroupRepository } from '../../src/repositories';
-import { connection } from '../Helper/database.config';
 
-const feature = loadFeature('../features/score.feature');
+const feature = loadFeature('./tests/features/score.feature');
 
 const createGroup = async (id: string) => ({
   id,
@@ -39,12 +39,11 @@ const createPostinGroupCheckin = async (
   id: string,
   groupId: string,
   userId: string,
-  createdAt: string,
 ) => ({
   id,
   title: 'Post Title',
   image: '',
-  createdAt: new Date(createdAt),
+  createdAt: new Date(),
   numPages: 10,
   groupId,
   authorId: userId, // added authorId property
@@ -98,37 +97,22 @@ defineFeature(feature, (test) => {
       async (userId, username, groupId, score) => {
         // format and create user
         const user = await createUser(userId, username, groupId, Number(score));
-        try {
-          await connection.get();
-          await (await connection.get()).user.create({ data: user });
-          // console.log('User created successfully');
-        } catch (error) {
-          console.error('Error creating user:', error);
-          throw error;
-        }
+        await connection.get();
+        await (await connection.get()).user.create({ data: user });
+        // console.log('User created successfully');
       },
     );
   };
 
   const givenPost = async (given: DefineStepFunction) => {
     given(
-      /^há um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)", createdAt "(.*)"$/,
-      async (postId, groupId, userId, createdAt) => {
+      /^há um post no sistema com id "(.*)", groupId "(.*)" e userId "(.*)" criado no dia atual$/,
+      async (postId, groupId, userId) => {
         // format and create post
-        const post = await createPostinGroupCheckin(
-          postId,
-          groupId,
-          userId,
-          createdAt,
-        );
-        try {
-          await connection.get();
-          await (await connection.get()).post.create({ data: post });
-          console.log('Post created successfully');
-        } catch (error) {
-          console.error('Error creating post:', error);
-          throw error;
-        }
+        const post = await createPostinGroupCheckin(postId, groupId, userId);
+        await connection.get();
+        await (await connection.get()).post.create({ data: post });
+        // console.log('Post created successfully');
       },
     );
   };
@@ -147,7 +131,7 @@ defineFeature(feature, (test) => {
 
   const thenStatusResponse = async (then: DefineStepFunction) => {
     then(/^o status da resposta deve ser "(.*)"$/, async (status) => {
-      if (response.status !== parseInt(status)) {
+      if (response.status !== parseInt(status, 10)) {
         throw new Error(
           `Expected status ${status}, but got ${response.status}`,
         );
@@ -189,9 +173,12 @@ defineFeature(feature, (test) => {
   const thenUserwithScore = async (then: DefineStepFunction) => {
     then(
       /^deve ser retornado um JSON contendo o usuário com id "(.*)", groupId "(.*)", score "(.*)"$/,
-      async (userId, score) => {
-        console.log('RESPONSE: ', response.body);
-        if (response.body.data.score !== Number(score)) {
+      async (userId, groupId, score) => {
+        if (
+          response.body.data.score !== Number(score) ||
+          response.body.data.id !== userId ||
+          response.body.data.groupId !== groupId
+        ) {
           throw new Error(
             `Expected user with id ${userId} to have score ${score}`,
           );

@@ -1,12 +1,13 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'supertest';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { connection } from '../Helper/database.config';
+import { connection } from '../../src/Helper/database.config';
 import app from '../../src/app';
-import { afterAll, beforeAll, beforeEach, expect } from '@jest/globals';
 
-const feature = loadFeature('../features/user_registration.feature');
+const feature = loadFeature('./tests/features/user_registration.feature');
 defineFeature(feature, (test) => {
-  let response;
+  let response: request.Response;
 
   beforeAll(async () => {
     await connection.create();

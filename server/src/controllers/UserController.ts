@@ -1,26 +1,26 @@
 import { NextFunction, Request, Response } from 'express';
+import { ZodError } from 'zod';
 import { UserRepository } from '../repositories/index';
 import { UserDTO } from '../DTOs/index';
-import { ZodError } from 'zod';
 
 class UserController {
   async create(req: Request, res: Response) {
     try {
-      console.log('🔹 Recebendo requisição de cadastro:', req.body);
+      // console.log('🔹 Recebendo requisição de cadastro:', req.body);
 
       const parsedData = UserDTO.parse(req.body);
-      console.log('✅ Dados validados com sucesso:', parsedData);
+      // console.log('✅ Dados validados com sucesso:', parsedData);
 
       const existingUser = await UserRepository.findByUsernameOrEmail(
         parsedData.username,
       );
       if (existingUser) {
-        console.log('⚠️ Usuário já existe:', existingUser);
+        // console.log('⚠️ Usuário já existe:', existingUser);
         return res.status(400).json({ message: 'O username já está em uso' });
       }
 
       const newUser = await UserRepository.create(parsedData);
-      console.log('🎉 Usuário criado com sucesso:', newUser);
+      // console.log('🎉 Usuário criado com sucesso:', newUser);
 
       return res.status(201).json({
         message: 'Cadastro realizado com sucesso',
@@ -28,14 +28,14 @@ class UserController {
       });
     } catch (error) {
       if (error instanceof ZodError) {
-        console.log('❌ Erro de validação:', error.errors);
+        // console.log('❌ Erro de validação:', error.errors);
         return res.status(400).json({
           message: error.errors[0].message,
           errors: error.errors,
         });
       }
 
-      console.error('🔥 Erro inesperado:', error);
+      // console.error('🔥 Erro inesperado:', error);
       return res.status(500).json({ error: 'Erro interno no servidor' });
     }
   }

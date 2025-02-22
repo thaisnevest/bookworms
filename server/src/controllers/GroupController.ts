@@ -26,12 +26,11 @@ class GroupController {
         active: true,
         code: '',
       });
-      
-      return res.status(200).json({
-        message: "Grupo criado",
-        group: newGroup
-      });
 
+      return res.status(200).json({
+        message: 'Grupo criado',
+        group: newGroup,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
@@ -75,13 +74,12 @@ class GroupController {
         image: imageUrl,
       });
       return res.status(200).json({
-        message: "Grupo atualizado",
-        group: group
+        message: 'Grupo atualizado',
+        group,
       });
-
-    }catch(error){
-      if(error instanceof z.ZodError){
-        return res.status(400).json({error: error.errors});
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
       }
 
       return res.status(500).json({
@@ -118,10 +116,9 @@ class GroupController {
 
       const updatedGroup = await GroupRepository.enter(groupCode, userId);
       return res.status(200).json({
-        message: "Usuario inserido no grupo",
-        grupo: updatedGroup
+        message: 'Usuario inserido no grupo',
+        grupo: updatedGroup,
       });
-
     } catch (error) {
       return res.status(500).json({
         error: 'internal server error',
@@ -136,9 +133,8 @@ class GroupController {
       const updatedUser = await GroupRepository.leave(userId);
       return res.status(200).json({
         user: updatedUser,
-        message: "Usuario retirado do grupo"
+        message: 'Usuario retirado do grupo',
       });
-
     } catch (error) {
       return res.status(500).json({
         error: 'internal server error',
@@ -162,10 +158,9 @@ class GroupController {
 
       const updatedGroup = await GroupRepository.reset(groupId, newDate);
       return res.status(200).json({
-        message: "Competição reiniciada",
-        group: updatedGroup
+        message: 'Competição reiniciada',
+        group: updatedGroup,
       });
-
     } catch (error) {
       return res.status(500).json({
         error: 'internal server error',

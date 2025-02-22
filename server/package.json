@@ -45,7 +45,7 @@
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "push": "cross-env DATABASE_HOST='localhost' prisma db push",
-    "test": "cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' prisma db push && cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' jest --runInBand",
+    "test": "cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' prisma db push && cross-env DATABASE_URL='postgres://postgres:docker@localhost:5433/bookworms-test' jest --runInBand --verbose",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {

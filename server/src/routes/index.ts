@@ -11,10 +11,9 @@ router.use('/feed', FeedRoutes);
 router.use('/groups', GroupRoutes);
 router.use('/comments', CommentRoutes);
 router.use('/score', ScoreRoutes);
+router.use('/users', UserRoutes);
 router.route('/').get((_, res) => {
   res.status(200).send('made by bookworms');
 });
-router.use('/users', UserRoutes);
-
 
 export default router;
