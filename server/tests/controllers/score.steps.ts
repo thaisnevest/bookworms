@@ -9,7 +9,7 @@ import { GroupRepository } from '../../src/repositories';
 
 const feature = loadFeature('./tests/features/score.feature');
 
-const createGroup = async (id: string) => ({
+const createGroup = async (id: string, type: string) => ({
   id,
   code: 'group-code',
   name: 'Grupo 1',
@@ -17,7 +17,7 @@ const createGroup = async (id: string) => ({
   createdAt: new Date(),
   active: true,
   duration: new Date(),
-  type: TypeScore.CHECKIN, // or TypeScore.PAGES based on your requirement
+  type: type === 'CHECKIN' ? TypeScore.CHECKIN : TypeScore.PAGES,
 });
 
 const createUser = async (
@@ -63,19 +63,22 @@ defineFeature(feature, (test) => {
   });
 
   const givenGroup = async (given: DefineStepFunction) => {
-    given(/^há um grupo no sistema com id "(.*)"$/, async (groupId) => {
-      const group = await createGroup(groupId);
-      await GroupRepository.create({
-        id: group.id,
-        code: group.code,
-        name: group.name,
-        image: group.image,
-        createdAt: group.createdAt,
-        active: group.active,
-        duration: group.duration,
-        type: group.type,
-      });
-    });
+    given(
+      /^há um grupo no sistema com id "(.*)" e type "(.*)"$/,
+      async (groupId, type) => {
+        const group = await createGroup(groupId, type);
+        await GroupRepository.create({
+          id: group.id,
+          code: group.code,
+          name: group.name,
+          image: group.image,
+          createdAt: group.createdAt,
+          active: group.active,
+          duration: group.duration,
+          type: group.type,
+        });
+      },
+    );
   };
 
   const givenNoGroup = async (given: DefineStepFunction) => {
@@ -137,18 +140,28 @@ defineFeature(feature, (test) => {
     );
   };
 
-  // const whenPUTRequest = async (when: DefineStepFunction) => {
-  //   when(/^uma requisição PUT for enviada para "(.*)"$/, async (route) => {
-  //     response = await supertest(app).put(route);
-  //   });
-  // };
-
   const whenPOSTPost = async (when: DefineStepFunction) => {
     when(
       /^é criado um post no sistema com id "(.*)", groupId "(.*)" e userId "(.*)"$/,
       async (postId, groupId, userId) => {
         // format and create post
         const post = await createPostinGroupCheckin(postId, groupId, userId);
+        await (await connection.get()).post.create({ data: post });
+        // update score
+        response = await supertest(app).put(
+          `/score/createPost/${groupId}/${userId}/${postId}`,
+        );
+      },
+    );
+  };
+
+  const whenPOSTPostPages = async (when: DefineStepFunction) => {
+    when(
+      /^é criado um post no sistema com id "(.*)", groupId "(.*)", userId "(.*)" e numPages "(.*)"$/,
+      async (postId, groupId, userId, numPages) => {
+        // format and create post
+        const post = await createPostinGroupCheckin(postId, groupId, userId);
+        post.numPages = Number(numPages);
         await (await connection.get()).post.create({ data: post });
         // update score
         response = await supertest(app).put(
@@ -173,8 +186,8 @@ defineFeature(feature, (test) => {
         response = await supertest(app)
           .put(`/score/putPost/${groupId}/${userId}/${postId}`)
           .send({
-            currentNumPages,
-            newNumPages,
+            currentNumPages: Number(currentNumPages),
+            newNumPages: Number(newNumPages),
           });
       },
     );
@@ -190,7 +203,7 @@ defineFeature(feature, (test) => {
         response = await supertest(app)
           .put(`/score/deletePost/${groupId}/${userId}`)
           .send({
-            numPages,
+            numPages: Number(numPages),
           });
       },
     );
@@ -303,16 +316,51 @@ defineFeature(feature, (test) => {
     thenMessageResponse(and);
   });
 
-  // Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
-  //       Given há um grupo no sistema com id "111"
-  //       And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
-  //       And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
-  //       When é deletado um post do sistema com id "aaa", groupId "111", userId "123" e numPages "10"
-  //       Then o status da resposta deve ser "200"
-  //       And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
-  //       And a resposta deve conter a mensagem "Pontuação atualizada"
-
   test('Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
+    givenPostwithPages(and);
+    whenDELETEPost(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  test('Incrementar a pontuação de um usuário depois de criar um post em grupo por páginas lidas', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
+    whenPOSTPostPages(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  test('Alterar a pontuação de um usuário depois de atualizar um post em grupo por páginas lidas', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUserinGroupwithScore(and);
+    givenPostwithPages(and);
+    whenPUTPost(when);
+    thenStatusResponse(then);
+    thenUserwithScore(and);
+    thenMessageResponse(and);
+  });
+
+  test('Reduzir a pontuação de um usuário depois de deletar um post em grupo por páginas lidas', ({
     given,
     and,
     when,

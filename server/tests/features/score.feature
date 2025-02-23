@@ -4,7 +4,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
     So that eu possa entender minha posição no ranking e competir eficientemente
 
     Scenario: Consultar ranking de um grupo
-        Given há um grupo no sistema com id "111"
+        Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "0"
         And há um usuário no sistema com id "456", username "thais", groupId "111" e score "10"
         And há um usuário no sistema com id "789", username "arthur", groupId "111" e score "20"
@@ -22,7 +22,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And a resposta deve conter a mensagem "Grupo não encontrado"
     
     Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por check-in
-        Given há um grupo no sistema com id "111"
+        Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "0"
         When é criado um post no sistema com id "aaa", groupId "111" e userId "123"
         Then o status da resposta deve ser "200"
@@ -30,7 +30,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And a resposta deve conter a mensagem "Pontuação atualizada"
 
     Scenario: Inalterar a pontuação de um usuário depois de criar um post em grupo por check-in
-        Given há um grupo no sistema com id "111"
+        Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "1"
         And há um post no sistema com id "aaa", groupId "111" e userId "123" criado no dia atual
         When é criado um post no sistema com id "bbb", groupId "111" e userId "123"
@@ -39,7 +39,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And a resposta deve conter a mensagem "Pontuação atualizada"
 
     Scenario: Inalterar a pontuação de um usuário depois de atualizar um post em grupo por check-in
-        Given há um grupo no sistema com id "111"
+        Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "1"
         And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
         When é atualizado o número de páginas de um post no sistema com id "aaa", groupId "111", userId "123" de numPages "10" para numPages "20"
@@ -48,7 +48,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And a resposta deve conter a mensagem "Pontuação atualizada"
     
     Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por check-in
-        Given há um grupo no sistema com id "111"
+        Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "1"
         And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
         When é deletado um post do sistema com id "aaa", groupId "111", userId "123" e numPages "10"
@@ -56,29 +56,28 @@ Feature: Gerenciamento de pontos dentro de um grupo
         And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
         And a resposta deve conter a mensagem "Pontuação atualizada"
 
-    # Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por páginas lidas
-    #     Given há um grupo no sistema com id "111"
-    #     And há um usuário no sistema com id "123", username "ana", groupId "111" e score "0"
-    #     And há um post no sistema com id "aaa", groupId "111", userId "123","numPages":"10"
-    #     When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
-    #     Then o status da resposta deve ser "200"
-    #     And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "10"
-    #     And a resposta deve conter a mensagem "Pontuação atualizada"
+    Scenario: Incrementar a pontuação de um usuário depois de criar um post em grupo por páginas lidas
+        Given há um grupo no sistema com id "111" e type "PAGES"
+        And há um usuário no sistema com id "123", username "ana", groupId "111" e score "0"
+        When é criado um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "10"
+        And a resposta deve conter a mensagem "Pontuação atualizada"
     
-    # Scenario: Alterar a pontuação de um usuário depois de atualizar um post em grupo por páginas lidas
-    #     Given há um grupo no sistema com id "111"
-    #     And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
-    #     And há um post no sistema com id "aaa", groupId "111", userId "123","numPages":"10" que foi atualizado para id "aaa", groupId "111", userId "123","numPages":"20"
-    #     When uma requisição PUT for enviada para "/score/createPost/111/123/aaa"
-    #     Then o status da resposta deve ser "200"
-    #     And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "20"
-    #     And a resposta deve conter a mensagem "Pontuação atualizada"
+    Scenario: Alterar a pontuação de um usuário depois de atualizar um post em grupo por páginas lidas
+        Given há um grupo no sistema com id "111" e type "PAGES"
+        And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
+        And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
+        When é atualizado o número de páginas de um post no sistema com id "aaa", groupId "111", userId "123" de numPages "10" para numPages "20"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "20"
+        And a resposta deve conter a mensagem "Pontuação atualizada"
     
-    # Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por páginas lidas
-    #     Given há um grupo no sistema com id "111"
-    #     And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
-    #     And o post com id "aaa", groupId "111", userId "123","numPages":"10" foi deletado do sistema
-    #     When uma requisição PUT for enviada para "/score/deletePost/111/123" com o corpo da requisição '"numPages":"10"
-    #     Then o status da resposta deve ser "200"
-    #     And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
-    #     And a resposta deve conter a mensagem "Pontuação atualizada"
+    Scenario: Reduzir a pontuação de um usuário depois de deletar um post em grupo por páginas lidas
+        Given há um grupo no sistema com id "111" e type "PAGES"
+        And há um usuário no sistema com id "123", username "ana", groupId "111" e score "10"
+        And há um post no sistema com id "aaa", groupId "111", userId "123" e numPages "10" criado no dia atual
+        When é deletado um post do sistema com id "aaa", groupId "111", userId "123" e numPages "10"
+        Then o status da resposta deve ser "200"
+        And deve ser retornado um JSON contendo o usuário com id "123", groupId "111" e score "0"
+        And a resposta deve conter a mensagem "Pontuação atualizada"
