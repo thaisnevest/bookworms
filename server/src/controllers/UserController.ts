@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { ZodError } from 'zod';
 import { UserRepository } from '../repositories/index';
 import { UserDTO } from '../DTOs/index';
-import { ZodError } from 'zod';
 
 class UserController {
   async create(req: Request, res: Response) {
