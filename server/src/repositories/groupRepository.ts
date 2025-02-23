@@ -2,21 +2,23 @@ import { Prisma, Groups, User } from '@prisma/client';
 import prisma from '../database';
 import { generateCustomId } from '../utils/customCode';
 
-
 class GroupRepository {
   /* eslint-disable no-await-in-loop */
   async create(data: Prisma.GroupsCreateInput): Promise<Groups> {
-    let flag = true;
-    let uniqueCode = generateCustomId();
+    let uniqueCode;
+    if (data.code === undefined || data.code === '') {
+      let flag = true;
+      uniqueCode = generateCustomId();
 
-    while (flag) {
-      const group = await prisma.groups.findUnique({
-        where: { code: uniqueCode },
-      });
+      while (flag) {
+        const group = await prisma.groups.findUnique({
+          where: { code: uniqueCode },
+        });
 
-      if (!group) flag = false;
-      else uniqueCode = generateCustomId();
-    }
+        if (!group) flag = false;
+        else uniqueCode = generateCustomId();
+      }
+    } else uniqueCode = data.code;
 
     const newGroup = await prisma.groups.create({
       data: {
