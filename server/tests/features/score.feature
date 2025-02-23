@@ -6,7 +6,7 @@ Feature: Gerenciamento de pontos dentro de um grupo
     Scenario: Consultar ranking de um grupo
         Given há um grupo no sistema com id "111" e type "CHECKIN"
         And há um usuário no sistema com id "123", username "ana", groupId "111" e score "0"
-        And há um usuário no sistema com id "456", username "thais", groupId "111" e score "10"
+        And há um usuário no sistema com id "456", username "thais", groupId "111" e score "20"
         And há um usuário no sistema com id "789", username "arthur", groupId "111" e score "20"
         When é feita uma busca do ranking do group de id "111"
         Then o status da resposta deve ser "200"

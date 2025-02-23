@@ -27,7 +27,7 @@ const createUser = async (
   score: number,
 ) => ({
   id,
-  name: 'Test Name',
+  name: username,
   username,
   email: `${username}@gmail.com`,
   password: '12345678',
