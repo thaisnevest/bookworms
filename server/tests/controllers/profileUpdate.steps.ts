@@ -52,4 +52,34 @@ defineFeature(feature, (test) => {
       });
   });
 
+  test('Cancelar alterações no perfil', ({ given, when, then, and }) => {
+    let originalBio: string | undefined; // Armazenará a bio original para comparação
+    let editedBio: string | undefined;
+
+    given('eu estou na minha página de perfil logado:', async (table) => {
+        const [userData] = table;
+        const response = await request(app).post('/users').send(userData);
+        expect(response.status).toBe(201);
+        userId = userData.id;
+        const profileResponse = await request(app).get(`/users/${userId}`);
+        originalBio = profileResponse.body.bio;
+    });
+
+    and('eu seleciono a opção "Editar Perfil"', () => {});
+
+    when('eu atualizo os campos:', async (table) => {
+        const [userData] = table;
+    });
+
+    and('eu clico na opção "Cancelar"', async () => {});
+
+    then('eu deveria ver a mensagem "Perfil não foi atualizado"', () => {});
+
+    and('minha bio permanece a mesma na página de perfil', async () => {
+        const updatedProfile = await request(app).get(`/users/${userId}`);
+        expect(updatedProfile.body.bio).toBe(originalBio);
+        expect(response.status).toBe(200);
+    });
+  });
+
 });
