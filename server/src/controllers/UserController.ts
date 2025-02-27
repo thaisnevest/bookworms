@@ -49,8 +49,12 @@ class UserController {
       if (!updatedUser) {
         return res.status(404).json({ message: 'Usuário não encontrado' });
       }
+      
+      return res.status(200).json({
+        message: 'Perfil atualizado com sucesso',
+        user: updatedUser,
+      });
 
-      res.status(200).json(updatedUser);
     } catch (error) {
       res.status(500).json({ error: 'Erro interno no servidor' });
     }
