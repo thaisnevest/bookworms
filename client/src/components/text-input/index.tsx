@@ -5,9 +5,16 @@ interface TextInputProps {
   type: string;
   placeholder?: string;
   width?: string;
+  value?: string | number | readonly string[] | undefined;
 }
 
-export function TextInput({ label, type, placeholder, width }: TextInputProps) {
+export function TextInput({
+  label,
+  type,
+  placeholder,
+  width,
+  value
+}: TextInputProps) {
   const divWidth = width ? width : 'w-full';
   return (
     <div className={`flex-col ${divWidth}`}>
@@ -15,7 +22,8 @@ export function TextInput({ label, type, placeholder, width }: TextInputProps) {
       <Input
         type={type}
         placeholder={placeholder}
-        className="focus-visible:ring-neutral-400 font-nunito border-gray"
+        value={value}
+        className="focus-visible:ring-neutral-400 font-nunito text-borrowDark border-gray"
       />
     </div>
   );
