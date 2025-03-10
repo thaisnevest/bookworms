@@ -18,15 +18,28 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  expressWinston.logger({ winstonInstance: requestLogger, statusLevels: true }),
-);
+if (
+  process.env.DATABASE_URL !==
+  'postgres://postgres:docker@localhost:5433/bookworms-test'
+) {
+  app.use(
+    expressWinston.logger({
+      winstonInstance: requestLogger,
+      statusLevels: true,
+    }),
+  );
+}
 expressWinston.requestWhitelist.push('body');
 expressWinston.responseWhitelist.push('body');
 app.use(routes);
 
 app.use(errorHandler);
 app.use(requestHandler);
-app.use(expressWinston.errorLogger({ winstonInstance: requestLogger }));
+if (
+  process.env.DATABASE_URL !==
+  'postgres://postgres:docker@localhost:5433/bookworms-test'
+) {
+  app.use(expressWinston.errorLogger({ winstonInstance: requestLogger }));
+}
 
 export default app;

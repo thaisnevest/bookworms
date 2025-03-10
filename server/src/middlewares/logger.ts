@@ -30,7 +30,14 @@ if (process.env.NODE_ENV !== 'production') {
         ...formatters,
         format.colorize({ all: true }),
         format.printf((info) => {
-          const { timestamp, message, meta } = info;
+          const { timestamp, message, meta } = info as unknown as {
+            timestamp: string;
+            message: string;
+            meta: {
+              req: { body: any };
+              res: { body: any; statusCode: number };
+            };
+          };
           let requestBody;
           let responseBody;
           try {
