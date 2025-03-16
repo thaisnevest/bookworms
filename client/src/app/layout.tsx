@@ -19,8 +19,8 @@ export default function RootLayout({
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light" // vei nao ta pegando :()
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}
