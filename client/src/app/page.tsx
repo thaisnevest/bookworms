@@ -4,6 +4,6 @@ import { CommentInput } from 'components/comments';
 
 
 export default function Home() {
-  return <CommentInput/>;
+  return <CommentInput userId="1"/>;
 
 }
