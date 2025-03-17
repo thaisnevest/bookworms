@@ -6,6 +6,9 @@ interface TextInputProps {
   placeholder?: string;
   width?: string;
   value?: string | number | readonly string[] | undefined;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  errorMessage?: string;
 }
 
 export function TextInput({
@@ -13,7 +16,10 @@ export function TextInput({
   type,
   placeholder,
   width,
-  value
+  value,
+  onChange,
+  error,
+  errorMessage
 }: TextInputProps) {
   const divWidth = width ? width : 'w-full';
   return (
@@ -23,8 +29,14 @@ export function TextInput({
         type={type}
         placeholder={placeholder}
         value={value}
-        className="focus-visible:ring-neutral-400 font-nunito text-borrowDark border-gray"
+        onChange={onChange}
+        className={`focus-visible:ring-neutral-400 font-nunito text-borrowDark ${error ? 'border-red-500' : 'border-gray'}`}
       />
+      {error && (
+        <p className="text-red-500 font-nunito font-semibold text-sm">
+          *{errorMessage}
+        </p>
+      )}
     </div>
   );
 }
