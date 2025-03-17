@@ -5,8 +5,9 @@ import 'styles/globals.css';
 
 export const metadata: Metadata = {
   title: 'bookworms',
-  description: 'a book club for everyone',
-  manifest: '/manifest.json'
+  description: 'a social platform for book lovers',
+  manifest: '/manifest.json',
+  icons: '/img/worm.png'
 };
 
 export default function RootLayout({

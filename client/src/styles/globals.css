@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz@9..40&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz@9..40&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Sacramento&family=Varela+Round&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,7 +68,9 @@
     @apply box-border m-0 p-0;
   }
 
-  html, body, #__next {
+  html,
+  body,
+  #__next {
     @apply h-full;
   }
 

@@ -1,3 +1,5 @@
+import { TextInput } from './text-input';
+import { CustomButton } from './button';
 import { WinnerCard } from "./Winners-card";
 
-export { WinnerCard };
+export { TextInput, CustomButton, WinnerCard };

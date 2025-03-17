@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import auth from '../middlewares/auth';
 import UserController from '../controllers/UserController';
 import upload from '../middlewares/multer';
 
