@@ -2,9 +2,9 @@
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import supertest from 'supertest';
+import { TypeScore } from '@prisma/client';
 import { connection } from '../../src/database/database.config';
 import app from '../../src/app';
-import { TypeScore } from '@prisma/client';
 
 const feature = loadFeature('./tests/features/comments.feature');
 
@@ -179,38 +179,38 @@ defineFeature(feature, (test) => {
     });
   };
 
-  const thenCommentCreated = async (then: DefineStepFunction) => {
-    then(
-      /^há no sistema um comentário criado com:$/,
-      async (expectedComment) => {
-        const prisma = await connection.get();
-        const parsedComment = JSON.parse(expectedComment);
-        const comment = await prisma.comment.findFirst({
-          where: {
-            postId: parsedComment.postId,
-            authorId: parsedComment.authorId,
-          },
-        });
+  // const thenCommentCreated = async (then: DefineStepFunction) => {
+  //   then(
+  //     /^há no sistema um comentário criado com:$/,
+  //     async (expectedComment) => {
+  //       const prisma = await connection.get();
+  //       const parsedComment = JSON.parse(expectedComment);
+  //       const comment = await prisma.comment.findFirst({
+  //         where: {
+  //           postId: parsedComment.postId,
+  //           authorId: parsedComment.authorId,
+  //         },
+  //       });
 
-        if (!comment) {
-          throw new Error('Comentário não criado');
-        }
-        console.log('Comentário encontrado:', comment);
-        console.log('Comentário esperado:', parsedComment);
-        if (
-          comment.postId !== parsedComment.postId ||
-          comment.authorId !== parsedComment.authorId ||
-          comment.text !== parsedComment.text ||
-          comment.createdAt.toISOString() !==
-            new Date(parsedComment.createdAt).toISOString()
-        ) {
-          throw new Error('Os dados do comentário não correspondem');
-        }
-        console.log('Comentário encontrado:', comment);
-        console.log('Comentário esperado:', parsedComment);
-      },
-    );
-  };
+  //       if (!comment) {
+  //         throw new Error('Comentário não criado');
+  //       }
+  //       console.log('Comentário encontrado:', comment);
+  //       console.log('Comentário esperado:', parsedComment);
+  //       if (
+  //         comment.postId !== parsedComment.postId ||
+  //         comment.authorId !== parsedComment.authorId ||
+  //         comment.text !== parsedComment.text ||
+  //         comment.createdAt.toISOString() !==
+  //           new Date(parsedComment.createdAt).toISOString()
+  //       ) {
+  //         throw new Error('Os dados do comentário não correspondem');
+  //       }
+  //       console.log('Comentário encontrado:', comment);
+  //       console.log('Comentário esperado:', parsedComment);
+  //     },
+  //   );
+  // };
 
   test('criar comentário', ({ given, when, then }) => {
     givenGroup(given);
@@ -242,6 +242,20 @@ defineFeature(feature, (test) => {
   });
 
   test('não criar comentário com mais de 150 caracteres', ({
+    given,
+    when,
+    then,
+  }) => {
+    givenGroup(given);
+    givenUser(given);
+    givenPost(given);
+    whenPOSTRequest(when);
+    thenStatusResponse(then);
+    thenMessageResponse(then);
+  });
+
+
+  test('não permitir comentário vazio ou maior que 150 caracteres', ({
     given,
     when,
     then,
