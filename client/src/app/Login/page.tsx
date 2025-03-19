@@ -1,27 +1,40 @@
 'use client';
-import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useForm, SubmitHandler, type FieldValues } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { CustomButton, TextInput } from 'components';
 import { Worm } from 'assets';
 import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
+
+interface FormData extends FieldValues {
+  emailORusername: string;
+  password: string;
+}
 
 export default function Login() {
   const router = useRouter();
-  const [emailORusername, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>();
+
+  const handleLogin: SubmitHandler<FormData> = async (data: FormData) => {
     try {
       const result = await signIn('credentials', {
         redirect: false,
-        emailORusername,
-        password
+        emailORusername: data.emailORusername,
+        password: data.password
       });
       console.log(result);
 
       if (result?.error) {
-        console.error('Failed to login');
+        setError(result.error);
         return;
       }
 
@@ -44,29 +57,56 @@ export default function Login() {
           <Image src={Worm} alt="Worm" width={80} height={80} />
           <h1 className="font-sacramento text-borrow text-6xl">bookworms</h1>
         </div>
-        <div className="flex-col w-full space-y-4">
+        <form
+          className="flex-col w-full space-y-4"
+          onSubmit={handleSubmit(async (data) => await handleLogin(data))}
+        >
           <TextInput
             type="text"
             label="Email ou Username"
-            value={emailORusername}
-            onChange={(e) => setUsername(e.target.value)}
-            error
-            errorMessage="Email ou Username inválido"
+            {...register('emailORusername', {
+              required: 'Email ou Username é obrigatório'
+            })}
+            error={!!errors.emailORusername}
+            errorMessage={errors.emailORusername?.message}
           />
           <TextInput
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             label="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password', {
+              required: 'Senha é obrigatória'
+            })}
+            error={!!errors.password}
+            errorMessage={errors.password?.message}
+            icon={
+              showPassword ? (
+                <EyeOff
+                  width={32}
+                  className="cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              ) : (
+                <Eye
+                  width={32}
+                  className="cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              )
+            }
           />
-          <CustomButton variant="borrow" label="Entrar" onClick={handleLogin} />
+          {error && (
+            <p className="flex justify-center w-full text-red-500 font-nunito font-semibold text-sm">
+              ⚠︎ {error}
+            </p>
+          )}
+          <CustomButton variant="borrow" label="Entrar" type="submit" />
           <p className="flex justify-center text-borrow font-nunito font-semibold ">
             Não possui conta?{' '}
             <a href="/" className="underline">
               Cadastre-se
             </a>
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );
