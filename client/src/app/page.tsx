@@ -1,7 +1,9 @@
 'use client';
 
-import Login from './Login/page';
+import { CommentInput } from 'components/comments';
+
 
 export default function Home() {
-  return <Login />;
+  return <CommentInput userId="1"/>;
+
 }

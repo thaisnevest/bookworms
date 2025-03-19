@@ -55,7 +55,8 @@ module.exports = {
         borrowDark: '#322828',
         gray: '#E4E4E7',
         pink: '#EE787C',
-        pinkLight: '#FB9696'
+        pinkLight: '#FB9696',
+        graphiteGray: '#484848'
       },
       borderRadius: {
         lg: 'var(--radius)',
