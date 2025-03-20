@@ -1,6 +1,6 @@
 'use client';
-import { CustomButton, Layout } from 'components';
-import { signOut, useSession } from 'next-auth/react';
+import { Layout } from 'components';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function Profile() {
@@ -14,20 +14,10 @@ export default function Profile() {
 
   const user = session.data?.user;
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      router.push('/Login');
-    } catch (error) {
-      console.error('Failed to logout');
-    }
-  };
-
   return (
     <Layout>
-      <p>Profile</p>
-      <p>{user?.name}</p>
-      <CustomButton label="Logout" variant="gray" onClick={handleLogout} />
+      <p className="text-borrowDark font-nunito">Profile</p>
+      <p className="text-borrowDark font-nunito">{user?.name}</p>
     </Layout>
   );
 }
