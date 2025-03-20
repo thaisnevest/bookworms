@@ -80,7 +80,7 @@
     "prisma": "^6.3.1",
     "prisma-dbml-generator": "^0.10.0",
     "supertest": "^6.3.4",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.2.6",
     "ts-jest-resolver": "^2.0.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",

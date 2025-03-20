@@ -1,5 +1,5 @@
 'use client';
-import { CustomButton } from 'components';
+import { CustomButton, Layout } from 'components';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -24,10 +24,10 @@ export default function Profile() {
   };
 
   return (
-    <div>
+    <Layout>
       <p>Profile</p>
       <p>{user?.name}</p>
       <CustomButton label="Logout" variant="gray" onClick={handleLogout} />
-    </div>
+    </Layout>
   );
 }
