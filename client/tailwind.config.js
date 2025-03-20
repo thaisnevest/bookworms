@@ -56,7 +56,8 @@ module.exports = {
         borrowDark: '#322828',
         gray: '#E4E4E7',
         pink: '#EE787C',
-        pinkLight: '#FB9696'
+        pinkLight: '#FB9696',
+        graphiteGray: '#484848'
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -65,12 +66,20 @@ module.exports = {
       },
       keyframes: {
         'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' }
+          from: {
+            height: '0'
+          },
+          to: {
+            height: 'var(--radix-accordion-content-height)'
+          }
         },
         'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' }
+          from: {
+            height: 'var(--radix-accordion-content-height)'
+          },
+          to: {
+            height: '0'
+          }
         }
       },
       animation: {
