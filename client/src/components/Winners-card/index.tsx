@@ -27,7 +27,13 @@ export function WinnerCard({
       </div>
       <div className="basis-1/3 content-center place-items-center">
         <div className="flex justify-around place-items-center w-[250px] h-[74px] bg-borrowMiddle rounded-[20px]">
-          <img className="mx-2 block h-16 w-16 rounded-full sm:mx-0 sm:shrink-2" src={firstImage} alt="" />
+          <Image
+            src={firstImage}
+            height={65}
+            width={65}
+            alt="first"
+            className="rounded-full aspect-square object-cover"
+          />
           <div className="space-y-2 text-center sm:text-left">
             <div className="space-y-0.5 place-self-start">
               <p className="font-nunito text-[#FFFFFF] font-bold text=[14px] ">{firstName}</p>
@@ -43,7 +49,13 @@ export function WinnerCard({
       </div>
       <div className="basis-1/3 flex justify-evenly">
         <div className="flex justify-around place-items-center w-[250px] h-[74px] bg-borrowMiddle rounded-[20px]">
-          <img className="mx-2 h-16 w-16 rounded-full sm:mx-0 sm:shrink-0" src={secondImage} alt="" />
+          <Image
+            src={secondImage}
+            height={65}
+            width={65}
+            alt="second"
+            className="rounded-full aspect-square object-cover"
+          />
           <div className="space-y-2 text-center sm:text-left">
             <div className="space-y-0.5 place-self-start">
               <p className="font-nunito text-[#FFFFFF] font-bold text=[14px] ">{secondName}</p>
@@ -57,7 +69,13 @@ export function WinnerCard({
           />
         </div>
         <div className="flex justify-around place-items-center w-[250px] h-[74px] bg-borrowMiddle rounded-[20px]">
-          <img className="mx-2 block h-16 w-16 rounded-full sm:mx-0 sm:shrink-0" src={thirdImage} alt="" />
+          <Image
+            src={thirdImage}
+            height={65}
+            width={65}
+            alt="third"
+            className="rounded-full aspect-square object-cover"
+          />
           <div className="space-y-2 text-center sm:text-left">
             <div className="space-y-0.5 place-self-start">
               <p className="font-nunito text-[#FFFFFF] font-bold text=[14px] ">{thirdName}</p>
