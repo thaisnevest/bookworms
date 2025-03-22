@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import { ZodError } from 'zod';
 import { CommentRepository } from '../repositories/index';
 import { Comment } from '../DTOs/index';
-import { ZodError } from 'zod';
+
 
 class CommentController {
   // Criar um comentário
@@ -9,7 +10,7 @@ class CommentController {
     try {
       const validatedData = Comment.parse(req.body);
       const { postId, authorId, text } = validatedData;
-
+      
       // Criando o comentário
       const newComment = await CommentRepository.create({
         post: {
@@ -73,27 +74,37 @@ class CommentController {
     }
   }
 
-  // Atualizar comentário
-  async updateComment(req: Request, res: Response) {
-    try {
-      const validatedData = Comment.pick({ text: true }).parse(req.body);
-      const { commentId } = req.params;
+// Atualizar comentário
+async updateComment(req: Request, res: Response) {
+  try {
+    const validatedData = Comment.pick({ text: true }).parse(req.body);
+    const { commentId } = req.params;
 
-      const updatedComment = await CommentRepository.update(
-        commentId,
-        validatedData.text,
-      );
-      res.status(200).json({
-        message: 'Comentário atualizado com sucesso',
-        data: updatedComment,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: 'Erro ao atualizar comentário',
-        error: (error as Error).message,
-      });
+    // Buscar o comentário pelo ID
+    const comment = await CommentRepository.findById(commentId);
+
+    // Verificar se o comentário existe
+    if (!comment) {
+      return res.status(404).json({ message: 'Comentário não encontrado' });
     }
+    
+    // Atualizar o comentário
+    const updatedComment = await CommentRepository.update(
+      commentId,
+      validatedData.text,
+    );
+
+    return res.status(200).json({
+      message: 'Comentário atualizado com sucesso',
+      data: updatedComment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Erro ao atualizar comentário',
+      error: (error as Error).message,
+    });
   }
+}
 
   // Deletar comentário
   async deleteComment(req: Request, res: Response) {

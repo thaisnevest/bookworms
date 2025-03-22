@@ -1,9 +1,9 @@
 'use client';
-
+import { Layout } from 'components';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function Profile() {
   const router = useRouter();
   const session = useSession({
     required: true,
@@ -12,13 +12,12 @@ export default function Home() {
     }
   });
 
-  if (session.status === 'authenticated') {
-    router.replace('/Profile');
-  }
+  const user = session.data?.user;
 
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-borrow">
-      <p className="font-semibold text-4xl text-white">bookworms</p>
-    </div>
+    <Layout>
+      <p className="text-borrowDark font-nunito">Create Group</p>
+      <p className="text-borrowDark font-nunito">{user?.name}</p>
+    </Layout>
   );
 }
