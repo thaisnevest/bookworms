@@ -13,14 +13,14 @@ import { UserPostImage } from 'assets';
 export default function Profile() {
   const router = useRouter();
   const session = useSession({
-    required: true,
+    // required: true,
     onUnauthenticated() {
       router.replace('/Login');
     }
   });
 
   const user = session.data?.user;
-
+  
   const [showPopup, setShowPopup] = useState(false);
 
   const handleLeaveGroupClick = () => {
@@ -31,11 +31,27 @@ export default function Profile() {
     setShowPopup(false);
   };
 
-  const leaveGroup = () => {
-    setShowPopup(false);
-    console.log('Saindo do grupo...');
-    router.push('/NoGroup');
+  const leaveGroup = async () => {
+    try {
+      const res = await fetch(`/api/group/leave/${user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Erro ao sair do grupo!');
+      }
+
+      setShowPopup(false);
+      router.push('/NoGroup');
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao sair do grupo!');
+    }
   };
+
 
   return (
     <Layout>
