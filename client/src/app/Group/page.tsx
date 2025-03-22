@@ -34,6 +34,7 @@ export default function Profile() {
   const leaveGroup = () => {
     setShowPopup(false);
     console.log('Saindo do grupo...');
+    router.push('/NoGroup');
   };
 
   return (
