@@ -13,7 +13,7 @@ import { UserPostImage } from 'assets';
 export default function Profile() {
   const router = useRouter();
   const session = useSession({
-    // required: true,
+    required: true,
     onUnauthenticated() {
       router.replace('/Login');
     }
