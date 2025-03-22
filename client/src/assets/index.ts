@@ -11,7 +11,8 @@ import Check from './check.svg';
 import Arrow from './Arrow.svg'
 import ArrowInput from './arrow-input.svg';
 import GroupCoverImage from './group-cover.svg';
+import UserPostImage from './user-post-image.svg';
 
-export {ArrowInput, GroupCoverImage, Worm, WormBig, Woman2, Trash3, Edit3, Close, Check, Arrow, firstBadge, secondBadge, thirdBadge };
+export {ArrowInput, GroupCoverImage, Worm, WormBig, Woman2, Trash3, Edit3, Close, Check, Arrow, firstBadge, secondBadge, thirdBadge, UserPostImage};
 
 
