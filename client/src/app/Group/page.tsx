@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GroupCover } from '../../components';
 import { GroupCoverImage } from 'assets';
+import Ranking from 'components/ranking';
 
 
 export default function Profile() {
@@ -19,9 +20,14 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="mt-[43px] ml-[148px]" >
+      <div>
+
+      </div>
+      {/* div do feed */}
+      <div className="mt-[43px] ml-[148px] flex flex-col" >
         <GroupCover name={'clube do livro <3'} date={'Até 30 de janeiro'} type={'Páginas Lidas'} image={GroupCoverImage}/>
-        <div>
+        <div className='flex flex-row'>
+          {/* botoes */}
           <div className='w-[321px] mt-[40px] gap-4 flex flex-col'>
             <PaginationComponent/>
             <SelectInput placeholder={'Filtrar por usuário'} options={['nalaura', 'thaís', 'victor', 'tusca']}/>
@@ -35,7 +41,17 @@ export default function Profile() {
         </div>
 
         <div>
-
+          <Ranking users={[{
+            name: 'AnaLaura',
+            id: '',
+            score: 100,
+            position: 1
+          }, {
+            name: 'Thaís',
+            id: '',
+            score: 95,
+            position: 2
+          }]}/>
         </div>
       </div>
       <p className="text-borrowDark font-nunito">{user?.name}</p>
