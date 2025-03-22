@@ -1,3 +1,4 @@
+'use client'; // Adicione esta linha no topo do arquivo
 import * as React from 'react';
 import { useState } from 'react';
 import { CloudUpload } from 'lucide-react';
