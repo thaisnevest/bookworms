@@ -20,9 +20,9 @@ export function GroupCover({name, date, type, image}: GroupCoverProps) {
         />
       </div>
         <div className='ml-6 mt-3'>
-          <h1 className= 'text-[#49423C] font-extrabold text-[24px]'>{name}</h1>
-          <h1 className='text-[#484848] font-normal text-[16px]'>{date}</h1>
-          <p className='text-[#484848] font-normal text-[16px] bg-red-100 h-[34px] w-[138.68px] rounded-[20px] flex items-center justify-center mt-1'>{type}</p>
+          <h1 className= 'text-[#49423C] font-extrabold text-[24px] font-nunito'>{name}</h1>
+          <h1 className='text-[#484848] font-normal text-[16px] font-nunito'>{date}</h1>
+          <p className='text-[#484848] font-normal text-[16px] font-nunito bg-red-100 h-[34px] w-[138.68px] rounded-[20px] flex items-center justify-center mt-1'>{type}</p>
         </div>
     </div>
   );
