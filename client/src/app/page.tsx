@@ -1,9 +1,24 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+  const router = useRouter();
+  const session = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace('/Login');
+    }
+  });
+
+  if (session.status === 'authenticated') {
+    router.replace('/Profile');
+  }
+
   return (
-    <div className="flex flex-1 flex-col h-full justify-center items-center bg-black">
-      <h1 className="text-white text-4xl font-bold">bookworms.</h1>
+    <div className="flex items-center justify-center h-screen w-full bg-borrow">
+      <p className="font-semibold text-4xl text-white">bookworms</p>
     </div>
   );
 }
