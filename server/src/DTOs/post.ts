@@ -5,7 +5,6 @@ export const Post = z.object({
   body: z.string().optional(),
   image: z.string({ required_error: 'Image is required' }),
   numPages: z.number(),
-  content: z.string(),
   authorId: z.string({ required_error: 'authorId is required' }),
   groupId: z.string({ required_error: 'groupId is required' }),
 });
