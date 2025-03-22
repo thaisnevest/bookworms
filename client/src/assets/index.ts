@@ -1,3 +1,6 @@
+import firstBadge from './firstBadge.svg';
+import secondBadge from './secondBadge.svg'
+import thirdBadge from './thirdBadge.svg'
 import Worm from './worm.svg';
 import WormBig from './worm_big.svg';
 import Woman2 from './woman2.svg';
@@ -9,8 +12,6 @@ import Arrow from './Arrow.svg'
 import ArrowInput from './arrow-input.svg';
 import GroupCoverImage from './group-cover.svg';
 
-export {ArrowInput, GroupCoverImage, Worm, WormBig, Woman2, Trash3, Edit3, Close, Check, Arrow };
-
-
+export {ArrowInput, GroupCoverImage, Worm, WormBig, Woman2, Trash3, Edit3, Close, Check, Arrow, firstBadge, secondBadge, thirdBadge };
 
 

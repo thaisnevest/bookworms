@@ -55,6 +55,7 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))'
         },
         borrow: '#703E30',
+        borrowMiddle: '#3F3232',
         borrowDark: '#322828',
         gray: '#E4E4E7',
         pink: '#EE787C',
