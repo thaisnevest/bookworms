@@ -3,6 +3,8 @@ Feature: Gerenciamento de pontos dentro de um grupo
     I want to acompanhar e gerenciar meus pontos
     So that eu possa entender minha posição no ranking e competir eficientemente
 
+    # ------------------------------ GUI scenarios ------------------------------ #
+
     Scenario: Ganho de pontos por páginas lidas
         Given Eu estou logado com o email "ana@gmail.com" e senha "1234#"
         And Eu participo do grupo de código "XYZKIO" com pontuação por "Página Lidas"
