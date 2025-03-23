@@ -1,8 +1,6 @@
 import React from "react";
 import Image from "next/image";
 
-
-
 type RankingUser = {
     id: string;
     name: string;
