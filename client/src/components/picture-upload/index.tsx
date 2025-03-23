@@ -38,14 +38,15 @@ export function FileUpload({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      onFileSelect(e.target.files[0]);
+      const file = e.target.files[0];
+      onFileSelect(file);
     }
   };
 
   return (
     <div className="flex flex-col">
       <label className="text-[#6B4A37] font-nunito  text-[20px]">{label}</label>{' '}
-      {}
+      { }
       <div
         className={`flex flex-col items-center justify-center border-2 ${dragging ? 'border-blue-500' : 'border-gray-300'} border-dashed rounded-lg p-4 text-center cursor-pointer`}
         style={{ width: `${width}px`, height: `${height}px` }}

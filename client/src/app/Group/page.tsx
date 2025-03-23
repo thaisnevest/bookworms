@@ -13,11 +13,16 @@ export default function Profile() {
   });
 
   const user = session.data?.user;
+  console.log(user?.groupId);
 
   return (
     <Layout>
       <p className="text-borrowDark font-nunito">Group</p>
       <p className="text-borrowDark font-nunito">{user?.name}</p>
+      <p className="text-borrowDark font-nunito">{user?.email}</p>
+      <p className="text-borrowDark font-nunito">{user?.bio}</p>
+      <p className="text-borrowDark font-nunito">{user?.score}</p>
+      <p className="text-borrowDark font-nunito">{user?.groupId}</p>
     </Layout>
   );
 }
