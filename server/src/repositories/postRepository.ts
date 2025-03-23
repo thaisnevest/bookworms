@@ -1,7 +1,42 @@
-import { Post } from '@prisma/client';
+import { Prisma, Post } from '@prisma/client';
 import prisma from '../database';
 
 class PostRepository {
+
+  async create(data: Omit<Prisma.PostCreateInput, "author" | "group"> & { authorId: string; groupId: string }): Promise<Post> {
+    const { authorId, groupId, ...postData } = data;
+
+    const post = await prisma.post.create({
+      data: {
+        ...postData,
+        author: { connect: { id: authorId } },
+        group: { connect: { id: groupId } },  
+      },
+    });
+
+    return post;
+  }
+
+  async update(postId: string, data: Prisma.PostUpdateInput): Promise<Post> {
+    const post = await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data,
+    });
+    return post;
+  }
+
+  async delete(postId: string): Promise<Post> { 
+    const post = await prisma.post.delete({
+      where: {
+        id: postId,
+      },
+    });
+    return post;
+  }
+
+
   async findById(postId: string): Promise<Post | null> {
     const post = await prisma.post.findUnique({
       where: {
