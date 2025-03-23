@@ -1,8 +1,6 @@
-import {Group, updateGroup} from './group';
+import { Group, updateGroup } from './group';
 import { Comment } from './comment';
 import { Post } from './post';
+import { UserDTO, updatedUserDTO } from './user';
 
-export {Group, updateGroup};
-export { Comment };
-export { Post };
-
+export { Group, UserDTO, updateGroup, Comment, updatedUserDTO, Post };
