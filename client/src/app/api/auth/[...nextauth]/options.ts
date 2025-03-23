@@ -3,7 +3,48 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 import api from 'services/api';
 
-interface User {
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      name: string;
+      username: string;
+      email: string;
+      score: number;
+      bio: string;
+      image: string;
+      groupId: string;
+    };
+  }
+
+  interface User {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    score: number;
+    bio: string;
+    image: string;
+    groupId: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    user: {
+      id: string;
+      name: string;
+      username: string;
+      email: string;
+      score: number;
+      bio: string;
+      image: string;
+      groupId: string;
+    };
+  }
+}
+
+interface UserRes {
   id: string;
   name: string;
   username: string;
@@ -16,7 +57,7 @@ interface User {
 
 interface ApiResponse {
   data: {
-    loggedUser: User;
+    loggedUser: UserRes;
     message: string;
   };
   status: number;
@@ -57,13 +98,33 @@ export const nextAuthOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      user && (token.user = user);
+      if (user) {
+        token.user = {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          score: user.score,
+          bio: user.bio,
+          image: user.image,
+          groupId: user.groupId
+        };
+      }
       return token;
     },
 
     async session({ session, token }) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      session.user = token.user as any;
+      session.user = {
+        id: token.user.id,
+        name: token.user.name,
+        username: token.user.username,
+        email: token.user.email,
+        score: token.user.score,
+        bio: token.user.bio,
+        image: token.user.image,
+        groupId: token.user.groupId
+      };
       return session;
     }
   }
