@@ -4,13 +4,34 @@ import { CustomButton, Layout, SelectInput, PaginationComponent, PostCard} from 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GroupCover } from '../../components';
-import { Close, GroupCoverImage } from 'assets';
+import { Close } from 'assets';
 import Image from 'next/image';
 import Ranking from 'components/ranking';
 import { UserPostImage } from 'assets';
 import api from 'services/api';
-import { set } from 'react-hook-form';
 
+interface RankingUser {
+  id: string;
+  name: string;
+  image?: string;
+  score: number;
+  position: number;
+}
+
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  score: number;
+  bio: string;
+  image: string;
+  groupId: string;
+}
+
+interface ApiResponse {
+  data: User[];
+}
 
 export default function Profile() {
   const router = useRouter();
@@ -23,7 +44,6 @@ export default function Profile() {
 
 
   const user = session.data?.user;
-  console.log('user', user?.groupId);
 
   const [showPopup, setShowPopup] = useState(false);
 
@@ -38,8 +58,7 @@ export default function Profile() {
   const leaveGroup = async () => {
     try {
       const res = await api.put(`/group/leave/${user?.id}`);
-
-      if (!res.ok) {
+      if (!res.data) {
         throw new Error('Erro ao sair do grupo!');
       }
 
@@ -52,6 +71,7 @@ export default function Profile() {
   };
 
   const [group, setGroup] = useState({
+    id: '',
     name: '',
     date: new Date(),
     type: '',
@@ -61,10 +81,8 @@ export default function Profile() {
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
-        console.log('user?.groupId', user?.groupId);
         const res = await api.get(`/groups/${user?.groupId}`);
         setGroup(res.data);
-        console.log('res', res.data);
 
       } catch (error) {
         console.error('Erro ao buscar dados do grupo:', error);
@@ -79,28 +97,35 @@ export default function Profile() {
     const month = newDate.toLocaleString('pt-BR', { month: 'long' });
     const day = newDate.getDate();
     const year = newDate.getFullYear();
-    console.log(newDate);
     return `Até ${day} de ${month} de ${year}`;
   };
 
-  const [ranking, setRanking] = useState([]);
+  const [ranking, setRanking] = useState <RankingUser[]> ([]);
 
   useEffect(() => {
 
     const fetchRankingData = async () => {
       try {
-        console.log(user?.groupId);
-        const res = await api.get(`/score/ranking/${user?.groupId}`);
-        const data = res.data;
+        const res = await api.get <ApiResponse> (`/score/ranking/${group.id}`);
+        const data = res.data.data;
+        const ranking = data.map((user, index) => ({
+          id: user.id,
+          name: user.name,
+          image: user.image,
+          score: user.score,
+          position: index + 1,
+        }));
         console.log('ranking', user?.groupId, data);
-        setRanking(data);
+        setRanking(ranking);
       } catch (error) {
         console.error('Erro ao buscar ranking:', error);
       }
     };
 
     fetchRankingData();
-  }, [user?.groupId]);
+  }, [user, group.id]);
+
+
 
   return (
     <Layout>
