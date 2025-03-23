@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 
 export interface FileUploadProps {
   onFileSelect: (file: File) => void;
-  width?: number; // Prop para largura
+  width?: number | string; // Aceita número ou string
   height?: number; // Prop para altura
   label?: string; // Nova prop para o texto do label
 }
