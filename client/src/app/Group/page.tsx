@@ -7,7 +7,6 @@ import { GroupCover } from '../../components';
 import { Close, UserPostImage } from 'assets';
 import Image from 'next/image';
 import Ranking from 'components/ranking';
-// import { UserPostImage } from 'assets';
 import api from 'services/api';
 
 interface Post {
@@ -54,6 +53,8 @@ export default function Profile() {
   const user = session.data?.user;
 
   const [showPopup, setShowPopup] = useState(false);
+  const [groupUsers, setGroupUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   const handleLeaveGroupClick = () => {
     setShowPopup(true);
@@ -65,9 +66,9 @@ export default function Profile() {
 
   const leaveGroup = async () => {
     try {
-      const res = await api.put(`/group/leave/${user?.id}`);
+      const res = await api.put(`/groups/leave/${user?.id}`);
       if (!res.data) {
-        throw new Error('Erro ao sair do grupo!');
+        console.error('Erro ao sair do grupo!');
       }
 
       setShowPopup(false);
@@ -90,7 +91,6 @@ export default function Profile() {
     const fetchGroupData = async () => {
       try {
         const res = await api.get(`/groups/${user?.groupId}`);
-        console.log('Grupo:', res.data);
         setGroup(res.data);
       } catch (error) {
         console.error('Erro ao buscar dados do grupo:', error);
@@ -108,9 +108,55 @@ export default function Profile() {
     return `Até ${day} de ${month} de ${year}`;
   };
 
-
   const [ranking, setRanking] = useState<RankingUser[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const fetchAuthorDetails = async (authorId: string): Promise<User> => {
+    try {
+      const res = await api.get<User>(`/users/${authorId}`);
+      return res.data;
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do autor:', error);
+      throw error;
+    }
+  };
+
+  const fetchPosts = async () => {
+    console.log('fetchPosts chamado com selectedUser:', selectedUser);
+    try {
+      let res;
+
+      if (selectedUser !== null) {
+        res = await api.get<Post[]>(`feed/groups/${group.id}/user/${selectedUser}`);
+      } else {
+        res = await api.get<Post[]>(`feed/groups/${group.id}`)
+      }
+
+      const postsWithAuthors = await Promise.all(
+        res.data.map(async (post) => {
+          const author = await fetchAuthorDetails(post.authorId);
+          return {
+            ...post,
+            author,
+          };
+        })
+      );
+
+      setPosts(postsWithAuthors);
+
+      if (selectedUser === null) {
+        const uniqueAuthors = postsWithAuthors
+          .map(post => post.author)
+          .filter((author, index, self) =>
+            author && self.findIndex(a => a?.id === author.id) === index
+          ) as User[];
+
+          setGroupUsers(uniqueAuthors);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar posts:', error);
+      }
+    };
 
   useEffect(() => {
     const fetchRankingData = async () => {
@@ -131,41 +177,9 @@ export default function Profile() {
       }
     };
 
-    const fetchAuthorDetails = async (authorId: string): Promise<User> => {
-      try {
-        const res = await api.get<User>(`/users/${authorId}`);
-        return res.data;
-      } catch (error) {
-        console.error('Erro ao buscar detalhes do autor:', error);
-        throw error;
-      }
-    };
-
-
-    const fetchPosts = async () => {
-      try {
-        const res = await api.get<Post[]>(`feed/groups/${group.id}`);
-        console.log('Posts:', res.data);
-
-        const postsWithAuthors = await Promise.all(
-          res.data.map(async (post) => {
-            const author = await fetchAuthorDetails(post.authorId);
-            return {
-              ...post,
-              author,
-            };
-          })
-        );
-
-        setPosts(postsWithAuthors);
-      } catch (error) {
-        console.error('Erro ao buscar posts:', error);
-      }
-    };
-
     fetchRankingData();
     fetchPosts();
-  }, [user, group.id]);
+  }, [user, group.id, selectedUser]);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -179,26 +193,31 @@ export default function Profile() {
   return (
     <Layout>
       <div className='flex flex-row p-10 justify-around'>
-        {/* div do feed */}
         <div className="flex flex-col">
           <GroupCover name={group.name} date={handledate(group.duration)} type={group.type} image={group.image} />
 
-          {/* div de baixo */}
           <div className='flex flex-row gap-[150px] mt-10'>
-            {/* botoes */}
             <div className='w-[321px] gap-4 flex flex-col'>
               <PaginationComponent />
-              <SelectInput placeholder={'Filtrar por usuário'} options={['nalaura', 'thaís', 'victor', 'tusca']} />
-              <CustomButton label={'+ Adicionar publicação'} variant={'dark'} />
+              <SelectInput
+                placeholder={'Filtrar por usuário'}
+                options={groupUsers.map(user => user.name)}
+                onChange={(selectedUserName) => {
+                  console.log('Nome selecionado:', selectedUserName);
+                  const selectedUser = groupUsers.find(user => user.name === selectedUserName);
+                  setSelectedUser(selectedUser ? selectedUser.id : null);
+                  console.log('Usuário encontrado:', selectedUser);
+                }}
+              />
+              <CustomButton label={'+ Adicionar publicação'} variant={'dark'} onClick={() => router.push('/CreateEditPost')} />
               <CustomButton label={'Sair do Grupo'} variant={'gray'} onClick={handleLeaveGroupClick} />
             </div>
 
-            {/* posts */}
             <div className="h-[680px] overflow-auto scrollbar-none">
               {posts.map(post => (
                 <PostCard
                   key={post.id}
-                  postText= {post.title}
+                  postText={post.title}
                   author={post.author?.name || 'Unknown Author'}
                   date={formatDate(post.createdAt)}
                   image={UserPostImage}
@@ -207,7 +226,6 @@ export default function Profile() {
             </div>
           </div>
         </div>
-        {/* <p className="text-borrowDark font-nunito">{user?.name}</p> */}
         <Ranking users={ranking} />
       </div>
 
@@ -227,6 +245,7 @@ export default function Profile() {
           </div>
         </div>
       )}
+
     </Layout>
   );
 }
