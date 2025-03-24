@@ -4,7 +4,7 @@ import { CustomButton, Layout, SelectInput, PaginationComponent, PostCard } from
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GroupCover } from '../../components';
-import { Close } from 'assets';
+import { Close, UserPostImage } from 'assets';
 import Image from 'next/image';
 import Ranking from 'components/ranking';
 // import { UserPostImage } from 'assets';
@@ -12,9 +12,10 @@ import api from 'services/api';
 
 interface Post {
   id: string;
-  text: string;
-  author: string;
-  date: string;
+  title: string;
+  authorId: string;
+  author?: User;
+  createdAt: string;
   image: string;
 }
 
@@ -80,7 +81,7 @@ export default function Profile() {
   const [group, setGroup] = useState({
     id: '',
     name: '',
-    date: new Date(),
+    duration: '',
     type: '',
     image: '',
   });
@@ -89,6 +90,7 @@ export default function Profile() {
     const fetchGroupData = async () => {
       try {
         const res = await api.get(`/groups/${user?.groupId}`);
+        console.log('Grupo:', res.data);
         setGroup(res.data);
       } catch (error) {
         console.error('Erro ao buscar dados do grupo:', error);
@@ -98,13 +100,14 @@ export default function Profile() {
     fetchGroupData();
   }, [user]);
 
-  const handledate = (date: Date) => {
-    const newDate = new Date(date);
-    const month = newDate.toLocaleString('pt-BR', { month: 'long' });
+  const handledate = (dateString: string): string => {
+    const newDate = new Date(dateString);
     const day = newDate.getDate();
+    const month = newDate.toLocaleString('pt-BR', { month: 'long' });
     const year = newDate.getFullYear();
     return `Até ${day} de ${month} de ${year}`;
   };
+
 
   const [ranking, setRanking] = useState<RankingUser[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -128,25 +131,57 @@ export default function Profile() {
       }
     };
 
+    const fetchAuthorDetails = async (authorId: string): Promise<User> => {
+      try {
+        const res = await api.get<User>(`/users/${authorId}`);
+        return res.data;
+      } catch (error) {
+        console.error('Erro ao buscar detalhes do autor:', error);
+        throw error;
+      }
+    };
+
+
     const fetchPosts = async () => {
       try {
         const res = await api.get<Post[]>(`feed/groups/${group.id}`);
-        setPosts(res.data); 
+        console.log('Posts:', res.data);
+
+        const postsWithAuthors = await Promise.all(
+          res.data.map(async (post) => {
+            const author = await fetchAuthorDetails(post.authorId);
+            return {
+              ...post,
+              author,
+            };
+          })
+        );
+
+        setPosts(postsWithAuthors);
       } catch (error) {
         console.error('Erro ao buscar posts:', error);
       }
     };
 
     fetchRankingData();
-    fetchPosts(); 
+    fetchPosts();
   }, [user, group.id]);
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('pt-BR', { month: 'short' });
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day} de ${month}, ${hours}h${minutes}`;
+  };
 
   return (
     <Layout>
       <div className='flex flex-row p-10 justify-around'>
         {/* div do feed */}
         <div className="flex flex-col">
-          <GroupCover name={group.name} date={handledate(group.date)} type={group.type} image={group.image} />
+          <GroupCover name={group.name} date={handledate(group.duration)} type={group.type} image={group.image} />
 
           {/* div de baixo */}
           <div className='flex flex-row gap-[150px] mt-10'>
@@ -163,16 +198,16 @@ export default function Profile() {
               {posts.map(post => (
                 <PostCard
                   key={post.id}
-                  postText={post.text}
-                  author={post.author}
-                  date={post.date}
-                  image={post.image}
+                  postText= {post.title}
+                  author={post.author?.name || 'Unknown Author'}
+                  date={formatDate(post.createdAt)}
+                  image={UserPostImage}
                 />
               ))}
             </div>
           </div>
         </div>
-        <p className="text-borrowDark font-nunito">{user?.name}</p>
+        {/* <p className="text-borrowDark font-nunito">{user?.name}</p> */}
         <Ranking users={ranking} />
       </div>
 
