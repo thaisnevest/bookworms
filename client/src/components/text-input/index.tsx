@@ -5,14 +5,16 @@ interface TextInputProps {
   label: string;
   type: string;
   width?: string;
+  height?:string;
   error?: boolean;
   errorMessage?: string;
   icon?: React.ReactNode;
 }
 
 export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
-  ({ label, type, width, error, errorMessage, icon, ...props }, ref) => {
+  ({ label, type, width, height, error, errorMessage, icon, ...props }, ref) => {
     const divWidth = width ? width : 'w-full';
+     const inputHeight = height ? height : "h-10"
     return (
       <div className={`flex-col ${divWidth}`}>
         <h2 className="text-borrow font-semibold font-nunito">{label}</h2>
@@ -21,7 +23,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           ref={ref}
           icon={icon}
           {...props}
-          className={`focus-visible:ring-neutral-400 font-nunito text-borrowDark ${error ? 'border-red-500' : 'border-gray'}`}
+          className={`focus-visible:ring-neutral-400 font-nunito text-borrowDark ${inputHeight} ${error ? 'border-red-500' : 'border-gray'}`}
         />
         {error && (
           <p className="text-red-500 font-nunito font-semibold text-sm">
