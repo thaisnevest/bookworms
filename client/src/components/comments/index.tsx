@@ -73,16 +73,6 @@ export function CommentInput({
 
   return (
     <div className="flex-col items-center">
-      <div className="flex items-start">
-        <textarea
-          placeholder={placeholder}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)} 
-          onKeyDown={handleKeyDown}
-          className="w-[351px] min-h-[67px] max-h-[200px] font-nunito text-graphiteGray border-none bg-gray rounded-[20px] p-2 resize-none overflow-y-auto text-[14px]"
-        />
-      </div>
-
       <div className="mt-4">
         {comments.map((comment) => (
           <div key={comment.id} className="flex space-between items-center w-[351px] p-2 bg-gray rounded-[20px] mt-2">
@@ -139,6 +129,15 @@ export function CommentInput({
             )}
           </div>
         ))}
+      </div>
+      <div className="flex items-start mt-2">
+        <textarea
+          placeholder={placeholder}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)} 
+          onKeyDown={handleKeyDown}
+          className="w-[351px] min-h-[67px] max-h-[200px] font-nunito text-graphiteGray border-none bg-gray rounded-[20px] p-2 resize-none overflow-y-auto text-[14px]"
+        />
       </div>
     </div>
   );

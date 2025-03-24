@@ -38,7 +38,7 @@ export default function Login() {
         return;
       }
 
-      router.push('/Profile');
+      router.push('/PubliDetails');
     } catch (error) {
       console.error('Failed to login');
     }
