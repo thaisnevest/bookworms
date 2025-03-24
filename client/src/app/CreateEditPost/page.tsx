@@ -1,153 +1,169 @@
 'use client';
- 
-import {useState} from "react";
+
+import * as React from 'react';
 import { Layout, TextInput } from "components";
 import { Button } from "components/ui/button";
-import Ranking from "components/ranking";
 import PageTitle from "components/title";
 import { FileUpload } from "components";
 import api from "services/api";
-import { useEffect } from "react";
-import { useSession } from "next-auth/react"; // Hook do NextAuth
-import { useRouter } from "next/navigation"; // Para navegação
-import * as React from 'react';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from 'react-hook-form';
 
+
+
+type FormData = {
+    title: string;
+    body?: string; // Opcional (tem o ? no schema)
+    numPages: number;
+    authorId: string;
+    groupId: string; // Obrigatório (não tem ? no schema)
+    imageFile: File; // Para o upload (será convertido para string URL depois)
+  };
+  
 
 export default function CreateEditPost() {
-    const { data: session } = useSession();
-    const user = session?.user;
-     const [title, setTitle] = useState("");
-     const [numPages, setNumPages] = useState("");
-     const [description, setDescription] = useState("");
-     const [image, setImage] = useState<File | null>(null);
-     const [users, setUsers] = useState<Array<{ id: string; name: string; image: string; score: number; position: number }>>([]);
-     const router = useRouter();
+    const router = useRouter();
+    const session = useSession({
+      required: true,
+      onUnauthenticated() {
+        router.replace('/Login');
+      }
+    });
 
-     const handleCancel = () => {
-         setTitle("");
-         setNumPages("");
-         setDescription("");
-         setImage(null);
-     };
- 
-     
 
-const handlePublish = async () => {
+    const user = session.data?.user;
     
-    console.log('📌 Verificando valores antes da validação:');
-    console.log("session.user:", session?.user);
-    console.log('titulo:', title);
-    console.log('nump:', numPages);
-    console.log('descrição:', description);
-    console.log('imagem:', image);
-    console.log('user:', users);
+    //const { register, handleSubmit, setValue } = useForm<FormData>();
+    const [image, setImage] = React.useState<File | null>(null);
 
-    if (!title || !numPages) {
-        alert('Por favor, preencha todos os campos obrigatórios.');
-       
-        return;
+    
+    // Adicione validações ao useForm
+const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
+    defaultValues: {
+      numPages: 0
     }
-
-    if (!session?.user) {
-        alert('Usuário não autenticado');
-
-        return;
-    }
-
-    if (users.length === 0) {
-        alert('Nenhum usuário encontrado');
-        
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('numPages', numPages);
-    formData.append('description', description);
-
-    if (image) {
-        formData.append('image', image);
-    }
-
-    if (user?.id) {
-        formData.append('authorId', user.id);
-    } else {
-        console.error('❌ Erro: Usuário não encontrado na sessão!');
-        
-        return;
-    }
-
-    if (user?.groupId) {
-        formData.append('groupId', user.groupId);
-    } else {
-        console.warn('⚠️ Aviso: Usuário sem grupo associado!');
-    }
-
+  });
+  
+  // Modifique o handleSubmit para incluir melhor tratamento de erros
+  const handlePublish: SubmitHandler<FormData> = async (data) => {
     try {
-        const response = await api.post('/posts', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        console.log('Post criado com sucesso', response.data);
-        router.push('/Posts'); // Redireciona para a lista de posts
-    }catch (error) {
-        if (error && typeof error === 'object' && 'response' in error) {
-            const apiError = error as { response?: { data?: unknown } };
-            console.error('Erro ao criar post:', apiError.response?.data || 'Erro desconhecido');
-        } else {
-            console.error('Erro ao criar post:', error);
+      if (!user) throw new Error('Usuário não autenticado');
+  
+      const formData = new FormData();
+      
+      // Campos exatos como no schema.prisma
+      formData.append('title', data.title);
+      if (data.body) formData.append('body', data.body); // Opcional
+      formData.append('numPages', data.numPages.toString());
+      formData.append('authorId', user.id);
+      formData.append('groupId', data.groupId || user.groupId); // Obrigatório
+      
+      // Campo do arquivo (note que no schema é 'image' mas no FormData pode ser 'imageFile')
+      if (image) {
+        formData.append('imageFile', image); // O backend converterá para string URL
+      }
+  
+      // Debug: verifique todos os campos enviados
+      console.log('Dados sendo enviados:', {
+        title: data.title,
+        body: data.body,
+        numPages: data.numPages,
+        authorId: user.id,
+        groupId: data.groupId || user.groupId,
+        hasImage: !!image
+      });
+  
+      const response = await api.post('/posts', formData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
         }
-    }
-};
+      });
+      
+      // Exemplo de utilização:
+      console.log('Post criado:', response.data);
+      router.push(`/post/${response.data.id}`); // Redireciona para o post criado
+  
+      
+    } catch (error) {
+        console.error('Erro ao criar o post', error);
+        // Adicione feedback visual para o usuário
+      }
+  };
+
+    const handleCancel = () => {
+        setValue('title', '');
+        setValue('numPages', 0);
+        setValue('body', '');
+        setImage(null);
+    };
 
 
-useEffect(() => {
-    console.log('Grupo do usuário:', session?.user?.groupId); // Verifique o groupId
-    if (session?.user?.groupId) {
-        const fetchUsers = async () => {
-            try {
-                const response = await api.get(`/groups/${session.user.groupId}/users`);
-                console.log('Usuários retornados pela API:', response.data); // Verifique os dados
-                setUsers(response.data);
-            } catch (error) {
-                console.error('Erro ao carregar os usuários', error);
-            }
-        };
-        fetchUsers();
-    } else {
-        console.log('Grupo não encontrado para o usuário.');
-    }
-}, [session]);
-    
-    
-     return (
+    return (
         <Layout>
-            <div className="flex gap-20 justify-center ">
-                <div className="flex flex-col items-center w-full max-w-[870px]" >
-                    <div className="flex mt-9  justify-center w-full">
-                        <PageTitle title="Publicando no club de livro" showBackButton={true}></PageTitle>
+            <div className="flex gap-20 justify-center">
+                <div className="flex flex-col items-center w-full max-w-[870px]">
+                    <div className="flex mt-9 justify-center w-full">
+                        <PageTitle title="Publicando no clube de livro" showBackButton={true} />
                     </div>
-                    <div className="flex gap-3 mt-12 ml-[8px]">
-                         <TextInput label="Título da Publicação" type="text" width="w-[502px]" height="h-[50px]"  {...{ value: title, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value) }} ></TextInput>
-                         <TextInput label="N° de páginas lidas" type="text" width="w-[353px]" height="h-[50px]" {...{ value: numPages, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setNumPages(e.target.value) }}  ></TextInput>
-                    </div>
-                    <div className="mt-5 ml-[8px]">  
-                        <TextInput label= "Descrição"  type="text" width="w-[870px]"  height="h-[100px]" {...{ value: description, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value) }} ></TextInput>
-                    </div>
-                    <div className="mt-8">
-                        <FileUpload onFileSelect={(file) => setImage(file)} width={870} height={246} />
-                    </div>
-                    <div className="flex gap-3 p-8 w-full justify-end ml-[55px] mt-9">
-                        <Button className="bg-gray w-[218px] h-[50px] font-nunito text-[20px] rounded-[10px]" onClick={handleCancel}>Cancelar</Button>
-                        <Button className="bg-borrow text-white w-[218px] h-[50px] font-nunito text-[20px] rounded-[10px]" onClick={handlePublish}>Publicar</Button>
-                    </div>
-                    
-                </div>
-                <div className="mt-9  ml-[250px]">
-                    <Ranking users={users} />
+                    <form onSubmit={handleSubmit(handlePublish)} className="w-full">
+                        <div className="flex gap-3 mt-12 ml-[8px]">
+                        <TextInput 
+                        label="Título da Publicação" 
+                        type="text" 
+                        width="w-[502px]" 
+                        height="h-[50px]" 
+                        {...register('title', { required: 'Título é obrigatório' })}
+                        errorMessage={errors.title?.message}
+                        />
+                        <TextInput 
+                            label="N° de páginas lidas" 
+                            type="number" 
+                            width="w-[353px]" 
+                            height="h-[50px]" 
+                            {...register('numPages',  { required: 'Numero de Paginas é obrigatório' })}
+                            errorMessage={errors.numPages?.message}
+                        />
+                        </div>
+                        <div className="mt-5 ml-[8px] w-[870px]">
+                            <h2 className="text-borrow font-semibold font-nunito">Descrição</h2>
+                            <textarea
+                                {...register('body')}
+                                className="w-full h-[100px] p-2 border bg-white border-gray rounded-md focus-visible:ring-neutral-400 font-nunito text-borrowDark"
+                                rows={4}
+                            />
+                        </div>
+                        <div className="mt-8">
+                        <FileUpload
+  onFileSelect={(file) => {
+    // Verifique se o arquivo é válido antes de atualizar o estado
+    if (file) {
+      setImage(file);
+    }
+  }}
+  width={870}
+  height={246}
+/>
+                        </div>
+                        <div className="flex gap-3 p-8 w-full justify-end ml-[55px] mt-9">
+                            <Button 
+                                type="button"
+                                className="bg-gray w-[218px] h-[50px] font-nunito text-[20px] rounded-[10px]" 
+                                onClick={handleCancel}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button 
+                                type="submit"
+                                className="bg-borrow text-white w-[218px] h-[50px] font-nunito text-[20px] rounded-[10px]" 
+                            >
+                               Publicar
+                            </Button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </Layout>
     );
 }
+
