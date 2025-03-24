@@ -10,7 +10,6 @@ import { FileUpload } from 'components';
 import { Modal } from 'components';
 import api from '../../services/api';
 import * as React from 'react';
-import axios from 'axios';
 
 
 type FormData = {
@@ -19,15 +18,15 @@ type FormData = {
 }
 
 export default function CreateGroup() {
-  // const router = useRouter();
-  // const session = useSession({
-  //   required: true,
-  //   onUnauthenticated() {
-  //     router.replace('/Login');
-  //   }
-  // });
+  const router = useRouter();
+  const session = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace('/Login');
+    }
+  });
 
-  // const user = session.data?.user;
+  const user = session.data?.user;
 
   const { register, handleSubmit } = useForm<FormData>();
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -52,8 +51,11 @@ export default function CreateGroup() {
           'Content-Type': 'multipart/form-data'
         }
       });
+      const code = response.data.group.code;
 
-      console.log(response.data);
+      await api.put(`/groups/enter/${code}/${user?.id}`);
+
+      router.push('/Group');
 
     } catch (error) {
       console.error('Erro ao acessar api', error)
@@ -65,8 +67,24 @@ export default function CreateGroup() {
     setIsVisible(false);
   };
 
-  const handleEnterGroup = () => {
+
+  const handleEnterGroup = async () => {
     setIsVisible(false);
+    const input = document.querySelector(
+      'input[type="text"]'
+    ) as HTMLInputElement;
+    const groupCode = input?.value;
+
+    try {
+
+      const response = await api.put(`groups/enter/${groupCode}/${user?.id}`);
+
+      router.push('/Group');
+
+    } catch (error) {
+      console.error('Erro ao acessar api', error)
+    }
+
   };
 
   return (
@@ -116,7 +134,7 @@ export default function CreateGroup() {
                       mode="single"
                       selected={date}
                       onSelect={setDate}
-                      className=" input rounded-md border border-stone-200"
+                      className=" input h-[315px] w-[250px] rounded-md border border-stone-200"
                     />
                   </div>
                 </div>
@@ -135,7 +153,17 @@ export default function CreateGroup() {
             </form>
           </div>
           <div className="basis-1/4 flex justify-center items-center">
-            <div className="w-3/4 h-5/6 bg-borrow rounded-[16px]"></div>
+            <div className="w-5/6 h-[600px] bg-borrow rounded-[16px] content-center place-items-center">
+              <div className="w-5/6 h-[550px]">
+                <h2 className="font-nunito font-white font-extrabold text-sm p-2">Entendendo a pontuação</h2>
+                <p className="font-nunito font-white font-extrabold text-sm">✦Check-in</p>
+                <p className="font-nunito font-white font-medium text-xs" >Aqui os pontos são contabilizados por dia, ou seja, basta um integrante do grupo fazer publicação que ganhará um ponto. Mas lembrando que a pontuação máxima por dia é de 1 ponto!</p>
+                <p className="font-nunito font-white font-extrabold text-sm">✦Por paginas</p>
+                <p className="font-nunito font-white font-medium text-xs" >Aqui os pontos são contabilizados pelo número de páginas lidas, então todas as publicações de um integrante contam para a pontuação. Só não vale mentir, hein?</p>
+                <h2 className="font-nunito font-white font-extrabold text-sm p-4">Entendendo a duração do grupo</h2>
+                <p className="font-nunito font-white font-medium text-xs" >O grupo dura até a data que você preencher no formulário, mas não se preocupe, será possível recomeçar a competição com os mesmos integrantes!</p>
+              </div>
+            </div>
           </div>
         </div>
       </Layout>
