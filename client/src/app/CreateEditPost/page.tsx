@@ -136,7 +136,7 @@ useEffect(() => {
                         <TextInput label= "Descrição"  type="text" width="w-[870px]"  height="h-[100px]" {...{ value: description, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value) }} ></TextInput>
                     </div>
                     <div className="mt-8">
-                        <FileUpload onFileSelect={(file) => setImage(file)} width={370} height={240} />
+                        <FileUpload onFileSelect={(file) => setImage(file)} width={870} height={246} />
                     </div>
                     <div className="flex gap-3 p-8 w-full justify-end ml-[55px] mt-9">
                         <Button className="bg-gray w-[218px] h-[50px] font-nunito text-[20px] rounded-[10px]" onClick={handleCancel}>Cancelar</Button>
