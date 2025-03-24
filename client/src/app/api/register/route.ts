@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   '/register',
-  upload.single('image'),
+  upload.single('image'), // Middleware para processar o upload do arquivo
   async (req: Request, res: Response) => {
     try {
       console.log('Recebendo requisição de cadastro:', req.body); // Log dos dados recebidos
@@ -52,9 +52,9 @@ router.post(
 
       // Faz o upload da imagem (se houver)
       let imageUrl = null;
-      if (parsedData.image) {
+      if (req.file) {
         console.log('Fazendo upload da imagem...'); // Log de upload
-        imageUrl = await uploadImage(parsedData.image.path);
+        imageUrl = await uploadImage(req.file.path); // Envia o arquivo para o Cloudinary
         console.log('Upload da imagem concluído:', imageUrl); // Log do resultado do upload
       }
 
@@ -91,3 +91,5 @@ router.post(
     }
   }
 );
+
+export default router;

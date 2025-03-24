@@ -1,9 +1,16 @@
 'use client';
-import { useForm, SubmitHandler, type FieldValues } from 'react-hook-form';
+import {
+  useForm,
+  SubmitHandler,
+  type FieldValues,
+  Controller
+} from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { CustomButton, TextInput } from 'components';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { FileUpload } from '../../components/picture-upload';
+import api from '../../services/api';
 
 interface FormData extends FieldValues {
   name: string;
@@ -11,6 +18,7 @@ interface FormData extends FieldValues {
   email: string;
   password: string;
   confirmPassword: string;
+  UserImage: File | null; // Alterado para File | null
 }
 
 export default function Register() {
@@ -22,34 +30,83 @@ export default function Register() {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    control // Adicionado para usar o Controller
   } = useForm<FormData>();
 
   const handleRegister: SubmitHandler<FormData> = async (data: FormData) => {
     try {
       if (data.password !== data.confirmPassword) {
-        setError('As senhas não coincidem');
+        setError('As senhas não coincidem.');
         return;
       }
 
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('username', data.username);
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      if (data.UserImage) {
+        formData.append('UserImage', data.UserImage); // Certifique-se de que o nome do campo está correto
+      }
+
+      console.log('Dados enviados:', {
+        name: data.name,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        image: data.UserImage
+          ? data.UserImage.name
+          : 'Nenhuma imagem selecionada'
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || 'Erro ao cadastrar');
+      // Verifica se o backend está acessível
+      try {
+        const testResponse = await api.get('/');
+        console.log('Backend está acessível:', testResponse.data);
+      } catch (testError) {
+        console.error('Erro ao conectar ao backend:', testError);
+        setError(
+          'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.'
+        );
         return;
       }
 
-      router.push('/Login');
-    } catch (error) {
-      console.error('Failed to register', error);
-      setError('Erro ao cadastrar');
+      // Envia os dados para o backend
+      const response = await api.post('/users/criar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        router.push('/Login');
+      } else {
+        const errorData = response.data;
+        console.error('Erro na resposta da API:', errorData);
+        setError(errorData.message || 'Erro ao cadastrar. Tente novamente.');
+      }
+    } catch (error: any) {
+      console.error('Erro ao cadastrar:', error);
+
+      if (error.response) {
+        // Erro na resposta do backend
+        const errorData = error.response.data;
+        if (errorData.message) {
+          setError(`Erro no servidor: ${errorData.message}`);
+        } else {
+          setError(
+            'Erro ao processar a requisição. Verifique os dados e tente novamente.'
+          );
+        }
+      } else if (error.request) {
+        // Erro de conexão (sem resposta do servidor)
+        setError(
+          'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.'
+        );
+      } else {
+        // Erro inesperado
+        setError('Ocorreu um erro inesperado. Tente novamente.');
+      }
     }
   };
 
@@ -123,6 +180,23 @@ export default function Register() {
             error={!!errors.confirmPassword}
             errorMessage={errors.confirmPassword?.message}
           />
+          <Controller
+            name="UserImage"
+            control={control}
+            rules={{ required: 'Imagem do usuário é obrigatória' }}
+            render={({ field }) => (
+              <FileUpload
+                label="Imagem do Usuário"
+                onFileSelect={(file) => field.onChange(file)} // Atualiza o valor do campo UserImage
+                width={400}
+              />
+            )}
+          />
+          {errors.UserImage && (
+            <p className="text-red-500 text-sm text-center">
+              ⚠︎ {errors.UserImage.message}
+            </p>
+          )}
           {error && (
             <p className="text-red-500 text-sm text-center">⚠︎ {error}</p>
           )}
