@@ -22,10 +22,14 @@ interface User {
 
 interface ApiComment {
   id: string;
-  content: string;
+  text: string;
   authorId: string;
-  authorName: string;
-  authorPhoto: string;
+  author: {
+    id: string;
+    name: string;
+    image: string;
+  };
+  createdAt?: string;
 }
 
 interface Post {
@@ -49,6 +53,12 @@ interface RankingUser {
 interface ApiResponse {
   data: User[];
 }
+
+interface ApiCommentResponse {
+  message: string;
+  data: ApiComment[];
+}
+
 
 export default function PubliDetails() {
   const router = useRouter();
@@ -81,6 +91,9 @@ export default function PubliDetails() {
     const fetchPostDetails = async () => {
       try {
         const res = await api.get<Post>(`/posts/${postId}`);
+        console.log('Dados do post:', res.data); // Verifica toda a resposta
+        console.log('Autor do post:', res.data.author); // Verifica o autor
+        console.log('Imagem do autor:', res.data.author?.image); 
         setPostData(res.data);
         setGroup((prevGroup) => ({
           ...prevGroup,
@@ -96,19 +109,34 @@ export default function PubliDetails() {
 
   // Busca os comentários do post
   useEffect(() => {
-    if (!postId) return;
-
     const fetchComments = async () => {
+      if (!postId) return;
+      
       try {
-        const res = await api.get<ApiComment[]>(`/posts/${postId}/comments`);
-        setCom(res.data);
+        const res = await api.get<ApiCommentResponse>(`/comments/post/${postId}`);
+        console.log('Dados dos comentários:', res.data.data);
+        
+        const formattedComments = res.data.data.map(comment => ({
+          id: comment.id,
+          text: comment.text,
+          authorId: comment.authorId,
+          author: {
+            id: comment.author?.id || comment.authorId,
+            name: comment.author?.name || 'Usuário Desconhecido',
+            image: comment.author?.image || '/default-avatar.png'
+          }
+        }));
+        
+        setCom(formattedComments);
       } catch (error) {
         console.error('Erro ao buscar comentários:', error);
       }
     };
-
+  
     fetchComments();
-  }, [postId]);
+  }, [postId]); // Agora só depende de postId
+
+ 
 
   
 
@@ -138,7 +166,7 @@ export default function PubliDetails() {
   return (
     <Layout>
       <div className="flex flex-start mt-8 gap-[100px]">
-        <div className="flex flex-col items-center min-h-screen ml-[100px]">
+        <div className="flex flex-col items-center min-h-screen ml-[100px justify-center]">
           <div className="mb-4">
             <PageTitle title="Detalhes da publicação" showBackButton={true} />
           </div>
@@ -150,6 +178,7 @@ export default function PubliDetails() {
                 alt="Descrição da imagem"
                 width={500}
                 height={440}
+                className="rounded-[20px]"
               />
             </div>
 
@@ -158,12 +187,14 @@ export default function PubliDetails() {
                 postText={postData.body || postData.title}
                 author={postData.author?.name || 'Autor desconhecido'}
                 date={new Date(postData.createdAt).toLocaleDateString('pt-BR')}
-                image={postData.author?.image || ''}
+                image={postData?.author.image || '/default-avatar.png'}
               />
               <CommentInput
+                user={user || null}  // Passando o user como prop
                 userId={user?.id || ''}
                 comments={com}
                 setComments={setCom}
+                postId={postId}
               />
             </div>
           </div>
@@ -171,7 +202,7 @@ export default function PubliDetails() {
           <p>Carregando post...</p>
         )}
       </div>
-        <div className="ml-[200px]">
+        <div className="ml-[150px]">
           <Ranking users={rankingUsers} />
         </div>
       </div>

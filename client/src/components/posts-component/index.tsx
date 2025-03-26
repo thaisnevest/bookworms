@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Woman2 } from 'assets';
+
 
 export interface PostCardProps {
   postText: string;
@@ -8,17 +8,18 @@ export interface PostCardProps {
   image?: string;
 }
 
-export function PostCard({ postText, author, date }: PostCardProps) {
+export function PostCard({ postText, author, date, image }: PostCardProps) {
   return (
     <div className="flex flex-col w-[351px] bg-white rounded-lg shadow-md overflow-hidden">
       <div className="flex items-center space-evenly ml-5">
         <div className="relative w-[80px] h-[200px]">
           <Image
-            src={Woman2}
+            src={image || '/default-avatar.png'}
             alt="group-cover"
             objectFit="cover"
             width={50}
             height={51}
+            className="w-[50px] h-[51px] rounded-full"
           />
         </div>
         <div className="flex flex-col mb-[150px]">
