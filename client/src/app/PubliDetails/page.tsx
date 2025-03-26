@@ -1,30 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { Layout } from "components";
-import PageTitle from "components/title";
-import { CommentInput } from "components";
-import Ranking from "components/ranking";
-import { PostCard } from "components";
-import Image from "next/image";
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Layout, PostCard, CommentInput } from 'components';
+import { useSession } from 'next-auth/react';
+import Ranking from 'components/ranking';
+import PageTitle from 'components/title';
+import Image from 'next/image';
+import api from 'services/api';
 
-// Tipos de dados
-interface PostData {
-  postId: string;
-  postText: string;
-  author: string;
-  date: string;
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  score: number;
+  bio: string;
   image: string;
   groupId: string;
-  comments: Comment[];
 }
 
-interface Comment {
+interface ApiComment {
   id: string;
   content: string;
   authorId: string;
   authorName: string;
   authorPhoto: string;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  body?: string;
+  image: string;
+  createdAt: string;
+  author: User;
+  groupId: string;
 }
 
 interface RankingUser {
@@ -35,102 +46,94 @@ interface RankingUser {
   position: number;
 }
 
-interface RankingApiResponse {
-  id: string;
-  name: string;
-  image?: string;
-  score: number;
+interface ApiResponse {
+  data: User[];
 }
 
-// Componente
-const PublicationDetails = ({ postId }: { postId: string }) => {
-  const [postData, setPostData] = useState<PostData | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [rankingUsers, setRankingUsers] = useState<RankingUser[]>([]);
-  const [userId, setUserId] = useState<string>("123");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function PubliDetails() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const postId = searchParams.get('postId');
 
+  const session = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace('/Login');
+    }
+  });
+
+  const user = session.data?.user;
+  const [postData, setPostData] = useState<Post | null>(null);
+  const [com, setCom] = useState<ApiComment[]>([]);
+  const [rankingUsers, setRanking] = useState<RankingUser[]>([]);
+  
+  const [group, setGroup] = useState({
+      id: '',
+      name: '',
+      duration: '',
+      type: '',
+      image: '',
+    });
+  // Busca os detalhes do post
   useEffect(() => {
-    const fetchData = async () => {
-        console.log("Post ID:", postId); // Verifique se o postId está correto
-  if (!postId) {
-    setError('ID do post inválido');
-    setLoading(false);
-    return;
-  }
-        // const postId="d9200f33-56ef-40a8-8647-8990b505be49"
-      if (!postId) {
-        setError('ID do post inválido');
-        setLoading(false);
-        return;
-      }
+    if (!postId) return;
 
+    const fetchPostDetails = async () => {
       try {
-        const postResponse = await fetch(`/api/posts/${postId}`);
+        const res = await api.get<Post>(`/posts/${postId}`);
+        setPostData(res.data);
+        setGroup((prevGroup) => ({
+          ...prevGroup,
+          id: res.data.groupId, // Preenchendo o group.id com o valor de postData
+        }));
+      } catch (error) {
+        console.error('Erro ao buscar detalhes do post:', error);
+      }
+    };
 
-        if (!postResponse.ok) {
-          setError('Falha ao buscar os dados do post');
-          setLoading(false);
-          return;
-        }
-        const postData = await postResponse.json();
-        console.log('Dados do post:', postData);
+    fetchPostDetails();
+  }, [postId]);
 
-        if (!postData || !postData.id || !postData.title || !postData.authorId) {
-          setError('Dados do post inválidos');
-          setLoading(false);
-          return;
-        }
+  // Busca os comentários do post
+  useEffect(() => {
+    if (!postId) return;
 
-        const formattedPostData: PostData = {
-          postId: postData.id,
-          postText: postData.title,
-          author: postData.authorId,
-          date: postData.createdAt,
-          image: postData.image,
-          groupId: postData.groupId,
-          comments: postData.comments || [],
-        };
+    const fetchComments = async () => {
+      try {
+        const res = await api.get<ApiComment[]>(`/posts/${postId}/comments`);
+        setCom(res.data);
+      } catch (error) {
+        console.error('Erro ao buscar comentários:', error);
+      }
+    };
 
-        setPostData(formattedPostData);
-        setComments(postData.comments || []);
+    fetchComments();
+  }, [postId]);
 
-        const rankingResponse = await fetch(`/api/score/${postData.groupId}/ranking`);
-        const rankingData: RankingApiResponse[] = await rankingResponse.json();
-        console.log('Dados do ranking:', rankingData);
+  
 
-        const rankedUsers: RankingUser[] = rankingData.map((user, index) => ({
+  // Busca o ranking dos usuários do grupo
+  useEffect(() => {
+    const fetchRankingData = async () => {
+      try {
+        const res = await api.get<ApiResponse>(`/score/ranking/${group.id}`);
+        const data = res.data.data;
+        const ranking = data.map((user, index) => ({
           id: user.id,
           name: user.name,
           image: user.image,
           score: user.score,
           position: index + 1,
         }));
-
-        setRankingUsers(rankedUsers);
-        setLoading(false);
+        console.log('ranking', user?.groupId, data);
+        setRanking(ranking);
       } catch (error) {
-        setError('Erro ao buscar dados');
-        setLoading(false);
-        console.error('Erro ao buscar dados:', error);
+        console.error('Erro ao buscar ranking:', error);
       }
     };
 
-    fetchData();
-  }, [postId]);
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!postData) {
-    return <div>Carregando...</div>;
-  }
+    fetchRankingData();
+  }, [group.id, user?.groupId]);
 
   return (
     <Layout>
@@ -139,7 +142,8 @@ const PublicationDetails = ({ postId }: { postId: string }) => {
           <div className="mb-4">
             <PageTitle title="Detalhes da publicação" showBackButton={true} />
           </div>
-          <div className="flex justify-center">
+          {postData ? (
+          <div className="flex justify-center gap-5 ml-[100px]">
             <div className="flex-shrink-0">
               <Image
                 src={postData.image}
@@ -151,19 +155,22 @@ const PublicationDetails = ({ postId }: { postId: string }) => {
 
             <div className="flex flex-col">
               <PostCard
-                postText={postData.postText}
-                author={postData.author}
-                date={postData.date}
-                image={postData.image}
+                postText={postData.body || postData.title}
+                author={postData.author?.name || 'Autor desconhecido'}
+                date={new Date(postData.createdAt).toLocaleDateString('pt-BR')}
+                image={postData.author?.image || ''}
               />
               <CommentInput
-                userId={userId}
-                comments={comments}
-                setComments={setComments}
+                userId={user?.id || ''}
+                comments={com}
+                setComments={setCom}
               />
             </div>
           </div>
-        </div>
+        ) : (
+          <p>Carregando post...</p>
+        )}
+      </div>
         <div className="ml-[200px]">
           <Ranking users={rankingUsers} />
         </div>
@@ -172,4 +179,3 @@ const PublicationDetails = ({ postId }: { postId: string }) => {
   );
 };
 
-export default PublicationDetails;
