@@ -5,9 +5,14 @@ import { Arrow } from 'assets';
 interface PageTitleProps {
   title: string;
   showBackButton: boolean;
+  onBackClick?: () => void; // Adicione esta nova prop
 }
 
-const PageTitle: React.FC<PageTitleProps> = ({ title, showBackButton }) => {
+const PageTitle: React.FC<PageTitleProps> = ({
+  title,
+  showBackButton,
+  onBackClick
+}) => {
   return (
     <div
       className={`w-full h-auto flex items-center gap-2 ${
@@ -15,7 +20,10 @@ const PageTitle: React.FC<PageTitleProps> = ({ title, showBackButton }) => {
       } rounded-lg   border rounded-[20px] border-gray`}
     >
       {showBackButton && (
-        <button className="px-4 py-2 text-white rounded-md cursor-pointer">
+        <button
+          onClick={onBackClick}
+          className="px-4 py-2 text-white rounded-md cursor-pointer"
+        >
           <Image src={Arrow} alt="arrow" />
         </button>
       )}
