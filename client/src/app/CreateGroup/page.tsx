@@ -114,13 +114,15 @@ export default function CreateGroup() {
                     <TextInput
                       type="text"
                       label="Nome"
-                      {...register('name')}
+                      {...register('name', {
+                        required: 'Campo obrigatório'
+                      })}
                     />
                   </div>
                 </div>
                 <div className="basis-1/3 flex flex-col">
                   <label className="text-borrow font-semibold font-nunito">Tipo</label>
-                  <select {...register('type')} className="bg-transparent border border-gray focus-visible:ring-neutral-400 rounded-lg font-nunito text-borrowDark h-[40px] w-full">
+                  <select {...register('type', { required: 'Campo obrigatório' })} className="bg-transparent border border-gray focus-visible:ring-neutral-400 rounded-lg font-nunito text-borrowDark h-[40px] w-full">
                     <option className="font-nunito" selected>Tipo de jogo</option>
                     <option className="font-nunito" value="CHECKIN">Check-in</option>
                     <option className="font-nunito" value="PAGES">Paginas</option>
