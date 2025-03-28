@@ -102,7 +102,7 @@ export default function CreateEditPost() {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         const newPostId = response.data.id;
-        router.push(`/PostDetails/${newPostId}`);
+        router.push(`/PubliDetails?postId=${newPostId}`);
       }
     } catch (error) {
       console.error('Erro ao acessar API:', error);
