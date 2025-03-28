@@ -20,6 +20,7 @@ export default function Profile() {
   });
 
   const user = session.data?.user;
+  console.log(user?.groupId);
 
   const [showPopup, setShowPopup] = useState(false);
 
@@ -98,7 +99,6 @@ export default function Profile() {
         </div>
       </div>
 )}
-
 
     </Layout>
   );
