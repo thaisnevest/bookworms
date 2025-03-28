@@ -1,9 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-
-
-type RankingUser = {
+interface RankingUser {
     id: string;
     name: string;
     image?: string;
@@ -11,17 +9,17 @@ type RankingUser = {
     position: number;
 }
 
-type RankingProps = {
+interface RankingProps {
     users: RankingUser[];
 }
 
-const Ranking: React.FC<RankingProps> = ({users}) => {
+export default function Ranking ({users}: RankingProps) {
     return (
         <div className="w-[347px] h-[993px] bg-borrow shadow-lg rounded-[20px]">
             <h2 className="text-[24px] font-black font-nunito text-center mb-4 p-8"> ✦ Wormers ✦ </h2>
             <div className="h-[calc(100%-90px)] overflow-y-auto flex flex-col items-center pb-7 scrollbar-none font-nunito">
                 {
-                    users.map((user) => (
+                    users && users.map((user) => (
                         <div
                             key={user.id}
                             className="flex items-center p-3"
@@ -49,4 +47,3 @@ const Ranking: React.FC<RankingProps> = ({users}) => {
     );
 };
 
-export default Ranking;
