@@ -39,7 +39,6 @@ export const TextInput = React.forwardRef<
     return (
       <div className={`flex flex-col ${divWidth} ${divHeight}`}>
         <h2 className="text-borrow font-semibold font-nunito">{label}</h2>
-
         {multiline ? (
           <textarea
             ref={ref as React.Ref<HTMLTextAreaElement>}
@@ -67,5 +66,6 @@ export const TextInput = React.forwardRef<
     );
   }
 );
+
 
 TextInput.displayName = 'TextInput';

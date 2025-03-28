@@ -38,7 +38,7 @@ export default function Login() {
         return;
       }
 
-      router.push('/Profile');
+      router.push('/CreateEditPost');
     } catch (error) {
       console.error('Failed to login');
     }

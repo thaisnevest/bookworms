@@ -8,6 +8,7 @@ interface PageTitleProps {
   onBackClick?: () => void; // Adicione esta nova prop
 }
 
+
 const PageTitle: React.FC<PageTitleProps> = ({
   title,
   showBackButton,
