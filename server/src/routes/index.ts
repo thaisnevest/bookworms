@@ -4,6 +4,7 @@ import UserRoutes from './userRoutes';
 import CommentRoutes from './CommentRoutes';
 import ScoreRoutes from './ScoreRoutes';
 import FeedRoutes from './FeedRoutes';
+import PostRoutes from './PostRoutes';
 import AuthRouter from './AuthRoutes';
 import PostRoutes from './PostRoutes';
 
