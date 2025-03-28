@@ -78,7 +78,6 @@ export function FileUpload({
           {label}
         </label>
       )}
-
       <div
         className={`relative flex flex-col items-center justify-center border-2 ${
           dragging ? 'border-blue-500' : 'border-gray-300'
