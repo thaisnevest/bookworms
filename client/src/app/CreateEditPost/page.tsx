@@ -116,7 +116,7 @@ export default function CreateEditPost() {
     setImage(null);
   };
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = (file: File | null) => {
     setImage(file);
   };
 
