@@ -1,10 +1,16 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { CustomButton, Layout, SelectInput, PaginationComponent, PostCard } from 'components';
+import {
+  CustomButton,
+  Layout,
+  SelectInput,
+  PaginationComponent,
+  PostCard
+} from 'components';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GroupCover } from '../../components';
-import { Close, UserPostImage } from 'assets';
+import { Close, UserPostImage, Books } from 'assets';
 import Image from 'next/image';
 import Ranking from 'components/ranking';
 import api from 'services/api';
@@ -85,7 +91,7 @@ export default function Profile() {
     name: '',
     duration: '',
     type: '',
-    image: '',
+    image: ''
   });
 
   useEffect(() => {
@@ -128,9 +134,11 @@ export default function Profile() {
       let res;
 
       if (selectedUser !== null) {
-        res = await api.get<Post[]>(`feed/groups/${group.id}/user/${selectedUser}`);
+        res = await api.get<Post[]>(
+          `feed/groups/${group.id}/user/${selectedUser}`
+        );
       } else {
-        res = await api.get<Post[]>(`feed/groups/${group.id}`)
+        res = await api.get<Post[]>(`feed/groups/${group.id}`);
       }
 
       const postsWithAuthors = await Promise.all(
@@ -138,7 +146,7 @@ export default function Profile() {
           const author = await fetchAuthorDetails(post.authorId);
           return {
             ...post,
-            author,
+            author
           };
         })
       );
@@ -147,17 +155,18 @@ export default function Profile() {
 
       if (selectedUser === null) {
         const uniqueAuthors = postsWithAuthors
-          .map(post => post.author)
-          .filter((author, index, self) =>
-            author && self.findIndex(a => a?.id === author.id) === index
+          .map((post) => post.author)
+          .filter(
+            (author, index, self) =>
+              author && self.findIndex((a) => a?.id === author.id) === index
           ) as User[];
 
-          setGroupUsers(uniqueAuthors);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar posts:', error);
+        setGroupUsers(uniqueAuthors);
       }
-    };
+    } catch (error) {
+      console.error('Erro ao buscar posts:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchRankingData = async () => {
@@ -169,7 +178,7 @@ export default function Profile() {
           name: user.name,
           image: user.image,
           score: user.score,
-          position: index + 1,
+          position: index + 1
         }));
         console.log('ranking', user?.groupId, data);
         setRanking(ranking);
@@ -191,31 +200,60 @@ export default function Profile() {
     return `${day} de ${month}, ${hours}h${minutes}`;
   };
 
+  if (!user?.groupId) {
+    return (
+      <Layout>
+        <p className="text-transparent font-nunito">{user?.name}</p>
+        <div className="fixed inset-0 flex flex-col items-center justify-center gap-4">
+          <Image src={Books} alt="books" width={258} height={197} />
+          <h1 className="font-nunito font-bold text-start text-lg text-[#6F6F6F]">
+            Parece que você não participa de nenhum grupo :(
+          </h1>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <div className='flex flex-row p-10 justify-around'>
+      <div className="flex flex-row p-10 justify-around">
         <div className="flex flex-col">
-          <GroupCover name={group.name} date={handledate(group.duration)} type={group.type} image={group.image} />
+          <GroupCover
+            name={group.name}
+            date={handledate(group.duration)}
+            type={group.type}
+            image={group.image}
+          />
 
-          <div className='flex flex-row gap-[150px] mt-10'>
-            <div className='w-[321px] gap-4 flex flex-col'>
+          <div className="flex flex-row gap-[150px] mt-10">
+            <div className="w-[321px] gap-4 flex flex-col">
               <PaginationComponent />
               <SelectInput
                 placeholder={'Filtrar por usuário'}
-                options={groupUsers.map(user => user.name)}
+                options={groupUsers.map((user) => user.name)}
                 onChange={(selectedUserName) => {
                   console.log('Nome selecionado:', selectedUserName);
-                  const selectedUser = groupUsers.find(user => user.name === selectedUserName);
+                  const selectedUser = groupUsers.find(
+                    (user) => user.name === selectedUserName
+                  );
                   setSelectedUser(selectedUser ? selectedUser.id : null);
                   console.log('Usuário encontrado:', selectedUser);
                 }}
               />
-              <CustomButton label={'+ Adicionar publicação'} variant={'dark'} onClick={() => router.push('/CreateEditPost')} />
-              <CustomButton label={'Sair do Grupo'} variant={'gray'} onClick={handleLeaveGroupClick} />
+              <CustomButton
+                label={'+ Adicionar publicação'}
+                variant={'dark'}
+                onClick={() => router.push('/CreateEditPost')}
+              />
+              <CustomButton
+                label={'Sair do Grupo'}
+                variant={'gray'}
+                onClick={handleLeaveGroupClick}
+              />
             </div>
 
             <div className="h-[680px] overflow-auto scrollbar-none">
-              {posts.map(post => (
+              {posts.map((post) => (
                 <PostCard
                   key={post.id}
                   postText={post.title}
@@ -233,21 +271,29 @@ export default function Profile() {
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white w-[480px] h-[180px] p-9 flex flex-col gap-8 rounded-[30px] shadow-2xl">
-            <div className='flex flex-row justify-between gap-5'>
-              <h1 className="font-nunito font-black text-start text-lg text-[#49423C]">Tem certeza que deseja sair do grupo?</h1>
+            <div className="flex flex-row justify-between gap-5">
+              <h1 className="font-nunito font-black text-start text-lg text-[#49423C]">
+                Tem certeza que deseja sair do grupo?
+              </h1>
               <button onClick={closePopup}>
                 <Image src={Close} alt="close" />
               </button>
             </div>
             <div className="flex gap-6 justify-center mt-4">
-              <CustomButton label="Cancelar" variant="gray" onClick={closePopup} />
-              <CustomButton label="Sair do grupo" variant="borrow" onClick={leaveGroup} />
+              <CustomButton
+                label="Cancelar"
+                variant="gray"
+                onClick={closePopup}
+              />
+              <CustomButton
+                label="Sair do grupo"
+                variant="borrow"
+                onClick={leaveGroup}
+              />
             </div>
           </div>
         </div>
       )}
-
-
     </Layout>
   );
 }
