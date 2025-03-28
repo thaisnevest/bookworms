@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import EndGroup from './EndGroup/page';
 
 
+
 export default function Home() {
     const router = useRouter();
     const session = useSession({
@@ -20,8 +21,8 @@ export default function Home() {
     }
 
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-borrow">
-      <p className="font-semibold text-4xl text-white">bookworms</p>
-    </div>
+    <p className="font-semibold text-4xl text-white">
+      Bem-vindo! Aguarde enquanto redirecionamos...
+    </p>
   );
 }

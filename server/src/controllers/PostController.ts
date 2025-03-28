@@ -14,9 +14,7 @@ class PostController {
         groupId: req.body.groupId,
         image: req.file ? req.file.path : undefined,
       };
-
       const parsedData = Post.parse(data);
-
       let imageUrl = '';
       if (parsedData.image) {
         imageUrl = await uploadImage(parsedData.image);
@@ -33,7 +31,7 @@ class PostController {
     }
   }
 
-  async update(req: Request, res: Response, next: NextFunction) {
+    async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const currentPost = await PostRepository.findById(id);
@@ -68,6 +66,7 @@ class PostController {
       return next(error); // Adiciona return aqui para garantir que a função sempre retorna algo
     }
   }
+
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
