@@ -265,7 +265,9 @@ export default function Profile() {
             </div>
           </div>
         </div>
-        <Ranking users={ranking} />
+        <div>
+          <Ranking users={ranking} />
+        </div>
       </div>
 
       {showPopup && (

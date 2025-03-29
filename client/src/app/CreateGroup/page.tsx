@@ -11,11 +11,10 @@ import { Modal } from 'components';
 import api from '../../services/api';
 import * as React from 'react';
 
-
 type FormData = {
   name: string;
   type: string;
-}
+};
 
 export default function CreateGroup() {
   const router = useRouter();
@@ -45,7 +44,6 @@ export default function CreateGroup() {
 
     console.log(Object.fromEntries(formData));
     try {
-
       const response = await api.post('/groups/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -56,17 +54,14 @@ export default function CreateGroup() {
       await api.put(`/groups/enter/${code}/${user?.id}`);
 
       router.push('/Group');
-
     } catch (error) {
-      console.error('Erro ao acessar api', error)
+      console.error('Erro ao acessar api', error);
     }
-
   };
 
   const handleCloseLogout = () => {
     setIsVisible(false);
   };
-
 
   const handleEnterGroup = async () => {
     setIsVisible(false);
@@ -76,19 +71,15 @@ export default function CreateGroup() {
     const groupCode = input?.value;
 
     try {
-
-      const response = await api.put(`groups/enter/${groupCode}/${user?.id}`);
+      await api.put(`groups/enter/${groupCode}/${user?.id}`);
 
       router.push('/Group');
-
     } catch (error) {
-      console.error('Erro ao acessar api', error)
+      console.error('Erro ao acessar api', error);
     }
-
   };
 
   return (
-
     <>
       <Modal
         isOpen={IsVisible}
@@ -104,10 +95,15 @@ export default function CreateGroup() {
           <div className="basis-3/4 flex flex-col">
             <div className="basis-1/6 flex justify-center items-center">
               <div className="w-4/5 h-4/5 content-center">
-                <h1 className=" text-[#49423C] font-nunito font-extrabold text-[24px]">Nos fale sobre o seu grupo</h1>
+                <h1 className=" text-[#49423C] font-nunito font-extrabold text-[24px]">
+                  Nos fale sobre o seu grupo
+                </h1>
               </div>
             </div>
-            <form onSubmit={handleSubmit(handleFunc)} className="basis-5/6 flex flex-col">
+            <form
+              onSubmit={handleSubmit(handleFunc)}
+              className="basis-5/6 flex flex-col"
+            >
               <div className="basis-1/6 flex flex-row">
                 <div className="basis-2/3 flex justify-center">
                   <div className="w-4/5 h-4/5">
@@ -121,11 +117,22 @@ export default function CreateGroup() {
                   </div>
                 </div>
                 <div className="basis-1/3 flex flex-col">
-                  <label className="text-borrow font-semibold font-nunito">Tipo</label>
-                  <select {...register('type', { required: 'Campo obrigatório' })} className="bg-transparent border border-gray focus-visible:ring-neutral-400 rounded-lg font-nunito text-borrowDark h-[40px] w-full">
-                    <option className="font-nunito" selected>Tipo de jogo</option>
-                    <option className="font-nunito" value="CHECKIN">Check-in</option>
-                    <option className="font-nunito" value="PAGES">Paginas</option>
+                  <label className="text-borrow font-semibold font-nunito">
+                    Tipo
+                  </label>
+                  <select
+                    {...register('type', { required: 'Campo obrigatório' })}
+                    className="bg-transparent border border-gray focus-visible:ring-neutral-400 rounded-lg font-nunito text-borrowDark h-[40px] w-full"
+                  >
+                    <option className="font-nunito" selected>
+                      Tipo de jogo
+                    </option>
+                    <option className="font-nunito" value="CHECKIN">
+                      Check-in
+                    </option>
+                    <option className="font-nunito" value="PAGES">
+                      Paginas
+                    </option>
                   </select>
                 </div>
               </div>
@@ -147,8 +154,18 @@ export default function CreateGroup() {
                     height={240}
                   />
                   <div className="flex p-4 flex-row justify-center items-center">
-                    <CustomButton variant="gray" label="Entrar em grupo existente" type="button" onClick={() => setIsVisible(true)} />
-                    <CustomButton variant="borrow" label="Criar grupo" type="submit" width="w-full m-2" />
+                    <CustomButton
+                      variant="gray"
+                      label="Entrar em grupo existente"
+                      type="button"
+                      onClick={() => setIsVisible(true)}
+                    />
+                    <CustomButton
+                      variant="borrow"
+                      label="Criar grupo"
+                      type="submit"
+                      width="w-full m-2"
+                    />
                   </div>
                 </div>
               </div>
@@ -157,13 +174,33 @@ export default function CreateGroup() {
           <div className="basis-1/4 flex justify-center items-center">
             <div className="w-5/6 h-[600px] bg-borrow rounded-[16px] content-center place-items-center">
               <div className="w-5/6 h-[550px]">
-                <h2 className="font-nunito font-white font-extrabold text-sm p-2">Entendendo a pontuação</h2>
-                <p className="font-nunito font-white font-extrabold text-sm">✦Check-in</p>
-                <p className="font-nunito font-white font-medium text-xs" >Aqui os pontos são contabilizados por dia, ou seja, basta um integrante do grupo fazer publicação que ganhará um ponto. Mas lembrando que a pontuação máxima por dia é de 1 ponto!</p>
-                <p className="font-nunito font-white font-extrabold text-sm">✦Por paginas</p>
-                <p className="font-nunito font-white font-medium text-xs" >Aqui os pontos são contabilizados pelo número de páginas lidas, então todas as publicações de um integrante contam para a pontuação. Só não vale mentir, hein?</p>
-                <h2 className="font-nunito font-white font-extrabold text-sm p-4">Entendendo a duração do grupo</h2>
-                <p className="font-nunito font-white font-medium text-xs" >O grupo dura até a data que você preencher no formulário, mas não se preocupe, será possível recomeçar a competição com os mesmos integrantes!</p>
+                <h2 className="font-nunito font-white font-extrabold text-sm p-2">
+                  Entendendo a pontuação
+                </h2>
+                <p className="font-nunito font-white font-extrabold text-sm">
+                  ✦Check-in
+                </p>
+                <p className="font-nunito font-white font-medium text-xs">
+                  Aqui os pontos são contabilizados por dia, ou seja, basta um
+                  integrante do grupo fazer publicação que ganhará um ponto. Mas
+                  lembrando que a pontuação máxima por dia é de 1 ponto!
+                </p>
+                <p className="font-nunito font-white font-extrabold text-sm">
+                  ✦Por paginas
+                </p>
+                <p className="font-nunito font-white font-medium text-xs">
+                  Aqui os pontos são contabilizados pelo número de páginas
+                  lidas, então todas as publicações de um integrante contam para
+                  a pontuação. Só não vale mentir, hein?
+                </p>
+                <h2 className="font-nunito font-white font-extrabold text-sm p-4">
+                  Entendendo a duração do grupo
+                </h2>
+                <p className="font-nunito font-white font-medium text-xs">
+                  O grupo dura até a data que você preencher no formulário, mas
+                  não se preocupe, será possível recomeçar a competição com os
+                  mesmos integrantes!
+                </p>
               </div>
             </div>
           </div>

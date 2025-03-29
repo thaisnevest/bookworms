@@ -146,9 +146,9 @@ export default function CreateEditPost() {
 
   return (
     <Layout>
-      <div className="flex gap-20 justify-center pl-[150px]">
-        <div className="flex flex-col items-center w-full max-w-[870px]">
-          <div className="flex mt-9 justify-center w-full">
+      <div className="flex justify-around p-8">
+        <div className="flex flex-col items-center w-[65%]">
+          <div className="flex justify-center w-full">
             <PageTitle
               title={
                 postId ? 'Editando publicação' : 'Publicando no clube de livro'
@@ -157,25 +157,25 @@ export default function CreateEditPost() {
             />
           </div>
           <form onSubmit={handleSubmit(handlePublish)} className="w-full">
-            <div className="flex gap-3 mt-12 ml-[8px]">
+            <div className="flex gap-3 mt-12 w-full">
               <TextInput
                 label="Título da Publicação"
                 type="text"
-                width="w-[502px]"
+                width="w-full"
                 height="h-[50px]"
                 {...register('title', { required: 'Título é obrigatório' })}
               />
               <TextInput
                 label="N° de páginas lidas"
                 type="number"
-                width="w-[353px]"
+                width="w-full"
                 height="h-[50px]"
                 {...register('numPages', {
                   required: 'Numero de Paginas é obrigatório'
                 })}
               />
             </div>
-            <div className="mt-5 ml-[8px] w-[870px]">
+            <div className="mt-5 w-full">
               <h2 className="text-borrow font-semibold font-nunito">
                 Descrição
               </h2>
@@ -188,7 +188,7 @@ export default function CreateEditPost() {
             <div className="mt-8">
               <FileUpload
                 onFileSelect={handleFileSelect}
-                width={870}
+                width={780}
                 height={246}
               />
             </div>
@@ -209,7 +209,7 @@ export default function CreateEditPost() {
             </div>
           </form>
         </div>
-        <div className="mt-9 pl-[150px]">
+        <div className="">
           <Ranking users={rankingData}></Ranking>
         </div>
       </div>

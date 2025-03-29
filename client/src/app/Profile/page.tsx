@@ -4,20 +4,20 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function Profile() {
-  // const router = useRouter();
-  // const session = useSession({
-  //   required: true,
-  //   onUnauthenticated() {
-  //     router.replace('/Login');
-  //   }
-  // });
+  const router = useRouter();
+  const session = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace('/Login');
+    }
+  });
 
-  // const user = session.data?.user;
+  const user = session.data?.user;
 
   return (
     <Layout>
       <p className="text-borrowDark font-nunito">Profile</p>
-      {/* <p className="text-borrowDark font-nunito">{user?.name}</p> */}
+      <p className="text-borrowDark font-nunito">{user?.name}</p>
     </Layout>
   );
 }
