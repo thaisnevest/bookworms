@@ -1,9 +1,7 @@
 'use client';
 
-import { FileUpload } from 'components';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import EndGroup from './EndGroup/page';
 
 export default function Home() {
   const router = useRouter();
