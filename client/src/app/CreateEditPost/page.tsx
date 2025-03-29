@@ -96,11 +96,15 @@ export default function CreateEditPost() {
         await api.put(`/posts/${postId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+        await api.put(`/score/putPost/${user?.groupId}/${user?.id}/${postId}`);
       } else {
         // Se estiver criando, fazer um POST
         const response = await api.post('/posts/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+        await api.put(
+          `/score/createPost/${user?.groupId}/${user?.id}/${response.data.id}`
+        );
         const newPostId = response.data.id;
         router.push(`/PubliDetails?postId=${newPostId}`);
       }
