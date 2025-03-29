@@ -154,6 +154,7 @@ export default function CreateEditPost() {
                 postId ? 'Editando publicação' : 'Publicando no clube de livro'
               }
               showBackButton={true}
+              onBackClick={() => router.push('/Group')}
             />
           </div>
           <form onSubmit={handleSubmit(handlePublish)} className="w-full">

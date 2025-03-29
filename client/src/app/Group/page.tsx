@@ -10,10 +10,11 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { GroupCover } from '../../components';
-import { Close, UserPostImage, Books } from 'assets';
+import { Close, Books } from 'assets';
 import Image from 'next/image';
 import Ranking from 'components/ranking';
 import api from 'services/api';
+import { ScrollArea, ScrollBar } from 'components/ui/scroll-area';
 
 interface Post {
   id: string;
@@ -47,7 +48,7 @@ interface ApiResponse {
   data: User[];
 }
 
-export default function Profile() {
+export default function Group() {
   const router = useRouter();
   const session = useSession({
     required: true,
@@ -91,7 +92,8 @@ export default function Profile() {
     name: '',
     duration: '',
     type: '',
-    image: ''
+    image: '',
+    code: ''
   });
 
   useEffect(() => {
@@ -223,9 +225,10 @@ export default function Profile() {
             date={handledate(group.duration)}
             type={group.type}
             image={group.image}
+            code={group.code}
           />
 
-          <div className="flex flex-row gap-[150px] mt-10">
+          <div className="flex flex-row gap-[100px] mt-8">
             <div className="w-[321px] gap-4 flex flex-col">
               <PaginationComponent />
               <SelectInput
@@ -252,17 +255,25 @@ export default function Profile() {
               />
             </div>
 
-            <div className="h-[680px] overflow-auto scrollbar-none">
-              {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  postText={post.title}
-                  author={post.author?.name || 'Unknown Author'}
-                  date={formatDate(post.createdAt)}
-                  image={UserPostImage}
-                />
-              ))}
-            </div>
+            {/* <div className="flex flex-col overflow-auto scrollbar-none gap-2"> */}
+            <ScrollArea className="h-[500px] w-full">
+              <div className="flex flex-col gap-2">
+                {posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    postText={post.title}
+                    author={post.author?.name || 'Unknown Author'}
+                    date={formatDate(post.createdAt)}
+                    image={post.image}
+                    handleClick={() =>
+                      router.push(`/PubliDetails?postId=${post.id}`)
+                    }
+                  />
+                ))}
+              </div>
+              {/* <ScrollBar className="transparent" color="red" /> */}
+            </ScrollArea>
+            {/* </div> */}
           </div>
         </div>
         <div>

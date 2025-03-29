@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Layout, PostCard, CommentInput } from 'components';
+import { Layout, CommentInput } from 'components';
 import { useSession } from 'next-auth/react';
 import Ranking from 'components/ranking';
 import PageTitle from 'components/title';
@@ -165,7 +165,11 @@ export default function PubliDetails() {
       <div className="flex flex-row">
         <div className="flex flex-col items-center min-h-screen p-5">
           <div className="mb-4 w-full">
-            <PageTitle title="Detalhes da publicação" showBackButton={true} />
+            <PageTitle
+              title="Detalhes da publicação"
+              showBackButton={true}
+              onBackClick={() => router.push('/Group')}
+            />
           </div>
           {postData ? (
             <div className="flex justify-center gap-5">
@@ -180,14 +184,28 @@ export default function PubliDetails() {
               </div>
 
               <div className="flex flex-col">
-                <PostCard
-                  postText={postData.body || postData.title}
-                  author={postData.author?.name || 'Autor desconhecido'}
-                  date={new Date(postData.createdAt).toLocaleDateString(
-                    'pt-BR'
-                  )}
-                  image={postData?.author.image || '/default-avatar.png'}
-                />
+                <div className="flex flex-col w-[352px] border-2 border-[#E4E4E7] rounded-[20px] shadow-md overflow-hidden">
+                  {}
+
+                  <div className="p-4">
+                    <h2 className="text-[#49423C] font-nunito font-bold text-[16px]">
+                      {postData.title}
+                    </h2>
+                    <p className="text-[#484848] font-nunito font-light text-[14px]">
+                      by {postData.author.name}
+                    </p>
+                  </div>
+
+                  {}
+                  <div className="relative w-full">{postData.body}</div>
+
+                  {}
+                  <div className="pt-7 pb-2 pr-2">
+                    <p className="text-[#484848] font-nunito font-light text-[14px] text-right">
+                      {new Date(postData.createdAt).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                </div>
                 <CommentInput
                   user={user || null} // Passando o user como prop
                   userId={user?.id || ''}
