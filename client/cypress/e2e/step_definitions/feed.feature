@@ -27,10 +27,10 @@ Feature: Feed
   #   When I select a user from the filter dropdown
   #   Then I should see only posts from that user
 
-  # Scenario: Navigate to create post
-  #   Given I'm on the group page
-  #   When I click on 'Adicionar publicação' button
-  #   Then I should be redirected to the create post page
+  Scenario: Navigate to create post
+    Given I'm on the group page
+    When I click on 'Adicionar publicação' button
+    Then I should be redirected to the create post page
 
   # Scenario: Successfully leave group
   #   Given I'm on the group page
