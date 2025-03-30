@@ -1,7 +1,7 @@
 import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps'
 
 Given("I'm on the group page", () => {
-  cy.visit('http://localhost:3000')
+  cy.visit('http://localhost:3000/Login')
   cy.get('input[name="emailORusername"]').type('gvnna')
   cy.get('input[name="password"]').type('123123kk')
   cy.get('button').click()

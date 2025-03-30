@@ -16,3 +16,4 @@ When("I click on 'Adicionar publicação' button", () => {
 Then("I should be redirected to the create post page", () => {
   cy.url().should('include', '/CreateEditPost')
 })
+
