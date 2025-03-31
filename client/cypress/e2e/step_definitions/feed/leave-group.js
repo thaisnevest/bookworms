@@ -2,8 +2,8 @@ import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps'
 
 Given("I'm on the group page", () => {
   cy.visit('http://localhost:3000/Login')
-  cy.get('input[name="emailORusername"]').type('gvnna')
-  cy.get('input[name="password"]').type('123123kk')
+  cy.get('input[name="emailORusername"]').type('thaisinha')
+  cy.get('input[name="password"]').type('bieberfever')
   cy.get('button').click()
   cy.get('img[alt="WormBig"]', { timeout: 10000 }).should('exist')
   cy.get('[data-sidebar="menu-item"]').eq(1).click()
@@ -21,4 +21,4 @@ Then ("I should be redirected to the no group page", () => {
   cy.get('h1').contains('Parece que você não participa de nenhum grupo :(').should('exist')
   cy.url().should('include', '/NoGroup')
 }
-) 
+)

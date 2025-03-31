@@ -2,8 +2,8 @@ import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps'
 
 Given("I'm logged in and have a group", () => {
   cy.visit('http://localhost:3000/Login')
-  cy.get('input[name="emailORusername"]').type('gvnna')
-  cy.get('input[name="password"]').type('123123kk')
+  cy.get('input[name="emailORusername"]').type('thaisinha')
+  cy.get('input[name="password"]').type('bieberfever')
   cy.get('button').click()
   cy.get('img[alt="WormBig"]', { timeout: 10000 }).should('exist')
 })
@@ -13,7 +13,7 @@ When("I visit the group page", () => {
 })
 
 Then("I should see the group cover with name, type and duration", () => {
-  cy.contains('div', 'grupogio').should('exist')
+  cy.contains('div', 'fantástico mundo de thaís').should('exist')
   cy.contains('h1', 'Código do grupo').should('exist')
   cy.contains('h1', 'Até').should('exist')
   cy.contains('p', 'CHECKIN').should('exist')
