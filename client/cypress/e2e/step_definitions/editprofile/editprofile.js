@@ -2,8 +2,8 @@ const { Given, When, Then } = require('cypress-cucumber-preprocessor/steps');
 
 Given('Eu estou logado na aplicação', () => {
   cy.visit('http://localhost:3000/');
-  cy.get('input[name="emailORusername"]').type('victorsilvaa');
-  cy.get('input[name="password"]').type('12345678');
+  cy.get('input[name="emailORusername"]').type('malcolm');
+  cy.get('input[name="password"]').type('5dollarponyride');
   cy.get('button').click();
   cy.url().should('include', '/Profile'); // Verifica se foi para a página de perfil após login
 });
@@ -39,7 +39,7 @@ When('Eu preencho páginas lidas com {string}', (paginas) => {
 When('Eu seleciono uma nova imagem de perfil', () => {
   cy.get('input[type="file"]')
     .first()
-    .selectFile('cypress/fixtures/example-profile.jpg', { force: true });
+    .selectFile('cypress/fixtures/yuel.jpg', { force: true });
 });
 
 When('Eu clico no botão {string}', (botaoTexto) => {
